@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Backend to Meal Plan Generator",
   "main": "listen.js",
+  "type": "module",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./dist/db/seeds/run-seed.js",

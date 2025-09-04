@@ -6,19 +6,15 @@
     "outDir": "./dist",
 
     // Environment Settings
-    "module": "nodenext",
+    "module": "es6",
     "target": "es6",
+    "moduleResolution": "node",
     "types": [],
     
     // For nodejs:
     "lib": ["es6"],
     // "types": ["node"],
     // and npm install -D @types/node
-
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
