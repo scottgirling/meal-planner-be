@@ -9,7 +9,8 @@
     "seed": "node ./dist/db/seeds/run-seed.js",
     "seed-prod": "NODE_ENV=production npm run seed",
     "test": "TZ=BST jest ./dist/__tests__/app.test",
-    "start": "tsc && node ./dist/listen.js"
+    "start": "tsc && node ./dist/listen.js",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.1",
+    "@types/pg": "^8.15.5",
     "@types/pg-format": "^1.0.5",
     "@types/supertest": "^6.0.3",
     "axios": "^1.11.0",
@@ -40,7 +42,7 @@
     "typescript": "^5.9.2"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
+    "husky": "^8.0.0",
     "jest": "^30.1.3",
     "jest-extended": "^4.0.2",
     "pg-format": "^1.0.4",
