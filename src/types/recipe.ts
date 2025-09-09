@@ -7,9 +7,9 @@ export interface Recipe {
   cook_time: number;
   votes: number;
   servings: number;
-  created_by: string;
-  created_at: string;
-  last_updated_at: string;
+  recipe_created_by: string;
+  recipe_created_at: string;
+  recipe_last_updated_at: string;
   recipe_img_url: string;
   difficulty: number;
   is_recipe_public: boolean;
