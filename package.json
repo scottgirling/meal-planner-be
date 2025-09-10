@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "Backend to Meal Plan Generator",
   "main": "listen.js",
-  "type": "module",
   "scripts": {
     "setup-dbs": "psql -f ./src/db/setup.sql",
     "seed": "node ./dist/db/seeds/run-seed.js",
     "seed-prod": "NODE_ENV=production npm run seed",
-    "test": "TZ=BST jest ./dist/__tests__/app.test",
+    "test": "tsc && TZ=BST jest ./dist/__tests__/app.test",
     "start": "tsc && node ./dist/listen.js",
     "prepare": "husky install"
   },
@@ -38,6 +37,7 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "pg": "^8.16.3",
+    "source-map-support": "^0.5.21",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
