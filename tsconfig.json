@@ -1,39 +1,23 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-
-    // Environment Settings
-    "module": "es2020",
+    "module": "commonjs",
     "target": "es2020",
     "moduleResolution": "node",
-    "types": [],
-    
-    // For nodejs:
+    "types": ["jest"],
     "lib": ["es6"],
-    // "types": ["node"],
-    // and npm install -D @types/node
-
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    // Style Options
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
-
-    // Recommended Options
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "inlineSources": true
+  },
+  "include": ["src"]
 }
