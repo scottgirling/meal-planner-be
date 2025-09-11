@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { CustomError } from "../types/custom-error";
 
 import express from "express";
 import cors from "cors";
@@ -14,3 +15,9 @@ app.use(cors());
 app.get("/api", getEndpoints);
 app.get("/api/tags", getTags);
 app.get("/api/recipes", getRecipes);
+
+app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
+    if (error.status && error.msg) {
+        response.status(error.status).send({ msg: error.msg });
+    }
+});
