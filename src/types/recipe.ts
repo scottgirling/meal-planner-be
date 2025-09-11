@@ -1,5 +1,5 @@
 export interface Recipe {
-  recipe_id?: number,
+  recipe_id?: number;
   recipe_name: string;
   recipe_slug: string;
   instructions: string;
@@ -12,5 +12,5 @@ export interface Recipe {
   recipe_last_updated_at: string;
   recipe_img_url: string;
   difficulty: number;
-  is_recipe_public: boolean;
+  is_recipe_public: boolean
 }
