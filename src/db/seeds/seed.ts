@@ -96,16 +96,17 @@ export const seed = (
         return Promise.all([tagsTablePromise, usersTablePromise]);
     })
     .then(() => {
-        const ingredientsTablePromise = db.query(`CREATE TABLE ingredients (
+        return db.query(`CREATE TABLE ingredients (
             ingredient_id SERIAL PRIMARY KEY,
             ingredient_name VARCHAR NOT NULL,
             ingredient_slug VARCHAR NOT NULL,
             ingredient_created_at TIMESTAMP DEFAULT NOW(),
             ingredient_last_updated_at TIMESTAMP DEFAULT NOW(),
             ingredient_created_by uuid REFERENCES users(user_id) NOT NULL
-        )`);
-
-        const recipesTablePromise = db.query(`CREATE TABLE recipes (
+        )`)
+    })
+    .then(() => {
+            return db.query(`CREATE TABLE recipes (
             recipe_id SERIAL PRIMARY KEY,
             recipe_name VARCHAR NOT NULL,
             recipe_slug VARCHAR NOT NULL,
@@ -120,17 +121,16 @@ export const seed = (
             recipe_img_url VARCHAR,
             difficulty INT NOT NULL,
             is_recipe_public BOOLEAN DEFAULT TRUE
-        )`);
-
-        const mealPlansTablePromise = db.query(`CREATE TABLE meal_plans (
+        )`)
+    })
+    .then(() => {
+        return db.query(`CREATE TABLE meal_plans (
             meal_plan_id SERIAL PRIMARY KEY,
             meal_plan_created_by uuid NOT NULL, 
             meal_plan_created_at TIMESTAMP DEFAULT NOW(),
             meal_plan_last_updated_at TIMESTAMP DEFAULT NOW(),
             FOREIGN KEY (meal_plan_created_by) REFERENCES users(user_id) ON DELETE CASCADE
-        )`);
-
-        return Promise.all([ingredientsTablePromise, recipesTablePromise, mealPlansTablePromise]);
+        )`)
     })
     .then(() => {
         const shoppingListsTablePromise = db.query(`CREATE TABLE shopping_lists (
@@ -150,7 +150,10 @@ export const seed = (
             FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
         )`);
 
-        const recipeIngredientsTablePromise = db.query(`CREATE TABLE recipe_ingredients (
+        return Promise.all([shoppingListsTablePromise, recipeTagsTablePromise])
+    })
+    .then(() => {
+        return db.query(`CREATE TABLE recipe_ingredients (
             recipe_ingredient_id SERIAL PRIMARY KEY,
             recipe_id INT NOT NULL,
             ingredient_id INT NOT NULL,
@@ -158,16 +161,18 @@ export const seed = (
             unit VARCHAR NOT NULL,
             FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE,
             FOREIGN KEY (ingredient_id) REFERENCES ingredients(ingredient_id) ON DELETE CASCADE
-        )`);
-
-        const userFavouriteRecipesTable = db.query(`CREATE TABLE user_favourite_recipes (
+        )`)
+    })
+    .then(() => {
+        return db.query(`CREATE TABLE user_favourite_recipes (
             user_id uuid NOT NULL,
             recipe_id INT NOT NULL,
             PRIMARY KEY (user_id, recipe_id),
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
             FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
-        )`);
-
+        )`)
+    })
+    .then(() => {
         const mealPlanRecipesTablePromise = db.query(`CREATE TABLE meal_plan_recipes (
             meal_plan_recipe_id SERIAL PRIMARY KEY,
             meal_plan_id INT  NOT NULL,
@@ -176,10 +181,7 @@ export const seed = (
             FOREIGN KEY (meal_plan_id) REFERENCES meal_plans(meal_plan_id) ON DELETE CASCADE
         )`);
 
-        return Promise.all([shoppingListsTablePromise, recipeTagsTablePromise, recipeIngredientsTablePromise, userFavouriteRecipesTable, mealPlanRecipesTablePromise]);
-    })
-    .then(() => {
-        return db.query(`CREATE TABLE shopping_list_ingredients (
+        const shoppingListIngredientsTablePromise = db.query(`CREATE TABLE shopping_list_ingredients (
             shopping_list_ingredient_id SERIAL PRIMARY KEY,
             shopping_list_id INT NOT NULL,
             ingredient_id INT REFERENCES ingredients(ingredient_id) NOT NULL,
@@ -188,6 +190,8 @@ export const seed = (
             is_checked_off BOOLEAN DEFAULT FALSE,
             FOREIGN KEY (shopping_list_id) REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE
         )`);
+
+        return Promise.all([mealPlanRecipesTablePromise, shoppingListIngredientsTablePromise]);
     })
     .then(() => {
         const insertTagsQueryString = format(
