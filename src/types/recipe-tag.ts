@@ -1,4 +1,4 @@
 export interface RecipeTag {
-    recipe_id: number,
+    recipe_id: number;
     tag_id: number
 }
