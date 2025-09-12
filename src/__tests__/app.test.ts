@@ -16,7 +16,8 @@ import type {
     ShoppingList,
     Tag,
     UserFavouriteRecipe, 
-    User
+    User,
+    AdditionalRecipeInfo
 } from "../types/index.js";
 
 beforeEach(async () => {
@@ -326,6 +327,60 @@ describe("GET /api/recipes", () => {
                     expect(msg).toBe("Page does not exist.");
                 });
             });
+        });
+    });
+});
+
+describe("GET /api/recipes/:recipe_id", () => {
+    test("200: responds with an individual recipe object, with the appropriate properties (including from the 'users' table) and status code", () => {
+        return request(app)
+        .get("/api/recipes/1")
+        .expect(200)
+        .then((response) => {
+            const { recipe } = response.body as {
+                recipe: AdditionalRecipeInfo
+            }
+            const expectedOutput = {
+                "recipe_id": 1,
+                "recipe_name": "Spaghetti Carbonara",
+                "recipe_slug": "spaghetti-carbonara",
+                "instructions": "Boil pasta. Cook pancetta. Mix eggs and cheese. Combine everything and serve.",
+                "prep_time": 15,
+                "cook_time": 20,
+                "votes": 4,
+                "servings": 4,
+                "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+                "recipe_created_at": "2025-08-15T14:23:00.000Z",
+                "recipe_last_updated_at": "2025-09-01T09:15:00.000Z",
+                "recipe_img_url": "https://example.com/images/spaghetti-carbonara.jpg",
+                "difficulty": 3,
+                "is_recipe_public": true,
+                "username": "alicej",
+                "avatar_url": "https://example.com/avatars/alice.jpg",
+            }
+            expect(recipe).toEqual(expectedOutput);
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
+        return request(app)
+        .get("/api/recipes/12")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Recipe does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
+        return request(app)
+        .get("/api/recipes/one")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
         });
     });
 });
