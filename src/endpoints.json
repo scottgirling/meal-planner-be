@@ -248,7 +248,7 @@
         }
     },
     "GET /api/recipes/:recipe_id/ingredients": {
-        "description": "serves an array of recipe ingredients",
+        "description": "serves an array of ingredient objects for a given recipe",
         "queries": [],
         "examplePath": "/api/recipes/1/ingredients",
         "exampleResponse": [
@@ -258,6 +258,27 @@
             { "ingredient_name": "Parmesan Cheese", "quantity": "50", "unit": "g" },
             { "ingredient_name": "Black Pepper", "quantity": "1", "unit": "tsp" },
             { "ingredient_name": "Salt", "quantity": "0.5", "unit": "tsp" }
+        ]
+    },
+    "GET /api/recipes/:recipe_id/tags": {
+        "description": "serves an array of tag objects for a given recipe",
+        "queries": [],
+        "examplePath": "/api/recipes/3/tags",
+        "exampleResponse": [
+            {
+                "tag_id": 3,
+                "tag_name": "Thai",
+                "tag_slug": "thai",
+                "tag_created_at": "2025-09-05T10:03:00.000Z",
+                "tag_last_updated_at": "2025-09-05T10:03:00.000Z"
+            },
+            {
+                "tag_id": 4,
+                "tag_name": "Curry",
+                "tag_slug": "curry",
+                "tag_created_at": "2025-09-05T10:04:00.000Z",
+                "tag_last_updated_at": "2025-09-05T10:04:00.000Z"
+            }
         ]
     }
 }

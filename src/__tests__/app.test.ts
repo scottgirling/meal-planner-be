@@ -386,7 +386,7 @@ describe("GET /api/recipes/:recipe_id", () => {
 });
 
 describe("GET /api/recipes/:recipe_id/ingredients", () => {
-    test("200: responds with an array of ingredient objects for the particualr recipe, as well as an appropriate status code", () => {
+    test("200: responds with an array of ingredient objects for the relevant recipe, as well as an appropriate status code", () => {
         return request(app)
         .get("/api/recipes/1/ingredients")
         .expect(200)
@@ -419,6 +419,58 @@ describe("GET /api/recipes/:recipe_id/ingredients", () => {
     test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
         return request(app)
         .get("/api/recipes/one/ingredients")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+});
+
+describe("GET /api/recipes/:recipe_id/tags", () => {
+    test("200: responds with an array of tag objects for the relevant recipe, as well as an appropriate status code", () => {
+        return request(app)
+        .get("/api/recipes/3/tags")
+        .expect(200)
+        .then((response) => {
+            const { tags } = response.body as {
+                tags: Tag[]
+            }
+            const expectedOutput = [
+                {
+                    "tag_id": 3,
+                    "tag_name": "Thai",
+                    "tag_slug": "thai",
+                    "tag_created_at": "2025-09-05T10:03:00.000Z",
+                    "tag_last_updated_at": "2025-09-05T10:03:00.000Z"
+                },
+                {
+                    "tag_id": 4,
+                    "tag_name": "Curry",
+                    "tag_slug": "curry",
+                    "tag_created_at": "2025-09-05T10:04:00.000Z",
+                    "tag_last_updated_at": "2025-09-05T10:04:00.000Z"
+                }
+            ]
+            expect(tags).toEqual(expectedOutput);
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
+        return request(app)
+        .get("/api/recipes/12/tags")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Recipe does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
+        return request(app)
+        .get("/api/recipes/one/tags")
         .expect(400)
         .then((response) => {
             const { msg } = response.body as {
