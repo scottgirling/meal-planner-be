@@ -1,8 +1,9 @@
 import db from "../db/connection.js";
 import { Recipe } from "../types/recipe.js";
 
-export const selectRecipes = (sort_by: string = "votes", order: string = "desc", tag: string | undefined) => {
+export const selectRecipes = (sort_by: string = "votes", order: string = "desc", tag: string | undefined, limit: number = 20, p: number = 1) => {
 
+    const offset = (p - 1) * limit;
     const validSortBy = ["prep_time", "cook_time", "votes", "created_at", "difficulty"];
     const validOrder = ["asc", "desc"];
     let filterQueries: string[] | undefined = [];
@@ -29,10 +30,13 @@ export const selectRecipes = (sort_by: string = "votes", order: string = "desc",
         }
     }
 
-    sqlQuery += ` ORDER BY ${sort_by} ${order}`;
+    sqlQuery += ` ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset}`;
 
     return db.query(sqlQuery, filterQueries)
     .then(({ rows } : { rows: Recipe[] }) => {
+        if (p > 1 && !rows.length) {
+            return Promise.reject({ status: 404, msg: "Page does not exist." });
+        }
         return rows;
     });
 }
