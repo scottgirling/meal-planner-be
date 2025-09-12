@@ -241,4 +241,91 @@ describe("GET /api/recipes", () => {
             });
         });
     });
+    describe("Pagination", () => {
+        describe("limit", () => {
+            test("200: responds with an array of recipe objects according to the 'limit' query, as well as an appropriate status code", () => {
+                return request(app)
+                .get("/api/recipes?limit=2")
+                .expect(200)
+                .then((response) => {
+                    const { recipes } = response.body as {
+                        recipes: Recipe[]
+                    }
+                    expect(recipes.length).toBe(2);
+                });
+            });
+            test("200: responds with an array of recipe objects according to a default 'limit' query value (20) when one is not specifically selected, as well as an appropriate status code", () => {
+                return request(app)
+                .get("/api/recipes")
+                .expect(200)
+                .then((response) => {
+                    const { recipes } = response.body as {
+                        recipes: Recipe[]
+                    }
+                    expect(recipes.length).toBe(4);
+                });
+            });
+            test("400: responds with an appropriate status code and error message when passed an invalid 'limit' query value", () => {
+                return request(app)
+                .get("/api/recipes?limit=two")
+                .expect(400)
+                .then((response) => {
+                    const { msg } = response.body as {
+                        msg: string
+                    }
+                    expect(msg).toBe("Invalid data type.");
+                });
+            });
+        });
+        describe("p", () => {
+            test("200: responds with an array of recipe objects according to the 'p' query, as well as an appropriate status code", () => {
+                return request(app)
+                .get("/api/recipes?limit=2&p=2")
+                .expect(200)
+                .then((response) => {
+                    const { recipes } = response.body as {
+                        recipes: Recipe[]
+                    }
+                    expect(recipes.length).toBe(2);
+                    expect(recipes[0].votes).toBe(3);
+                    expect(recipes[1].votes).toBe(2);
+                });
+            });
+            test("200: responds with an array of recipe objects according to a default 'p' query value ('1') when one is not specifically selected, as well as an appropriate status code", () => {
+                return request(app)
+                .get("/api/recipes?limit=2")
+                .expect(200)
+                .then((response) => {
+                    const { recipes } = response.body as {
+                        recipes: Recipe[]
+                    }
+                    expect(recipes.length).toBe(2);
+                    expect(recipes[0].votes).toBe(7);
+                    expect(recipes[1].votes).toBe(4);
+                });
+            });
+            test("400: responds with an appropriate status code and error message when passed an invalid 'p' query value", () => {
+                return request(app)
+                .get("/api/recipes?p=three")
+                .expect(400)
+                .then((response) => {
+                    const { msg } = response.body as {
+                        msg: string
+                    }
+                    expect(msg).toBe("Invalid data type.");
+                });
+            });
+            test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'p' query value", () => {
+                return request(app)
+                .get("/api/recipes?p=45")
+                .expect(404)
+                .then((response) => {
+                    const { msg } = response.body as {
+                        msg: string
+                    }
+                    expect(msg).toBe("Page does not exist.");
+                });
+            });
+        });
+    });
 });
