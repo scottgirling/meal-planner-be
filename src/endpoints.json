@@ -280,5 +280,20 @@
                 "tag_last_updated_at": "2025-09-05T10:04:00.000Z"
             }
         ]
+    },
+    "GET /api/users/:user_id": {
+        "description": "serves an individual user object",
+        "queries": [],
+        "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+        "exampleResponse": {
+            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "user_name": "Alice Johnson",
+            "username": "alicej",
+            "email": "alice@example.com",
+            "bio": "Food lover and amateur chef. Always exploring new cuisines.",
+            "avatar_url": "https://example.com/avatars/alice.jpg",
+            "user_created_at": "2025-07-12T10:15:30.000Z",
+            "user_last_updated_at": "2025-09-01T08:00:00.000Z"
+        }
     }
 }
