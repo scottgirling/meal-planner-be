@@ -20,4 +20,11 @@ app.use((error: CustomError, request: Request, response: Response, next: NextFun
     if (error.status && error.msg) {
         response.status(error.status).send({ msg: error.msg });
     }
+    next(error);
 });
+
+app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
+    if (error.code === "42703") {
+        response.status(400).send({ msg: "Invalid data type." });
+    }
+})
