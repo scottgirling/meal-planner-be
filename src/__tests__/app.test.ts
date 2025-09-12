@@ -384,3 +384,47 @@ describe("GET /api/recipes/:recipe_id", () => {
         });
     });
 });
+
+describe("GET /api/recipes/:recipe_id/ingredients", () => {
+    test("200: responds with an array of ingredient objects for the particualr recipe, as well as an appropriate status code", () => {
+        return request(app)
+        .get("/api/recipes/1/ingredients")
+        .expect(200)
+        .then((response) => {
+            const { ingredients } = response.body as {
+                ingredients: RecipeIngredient[]
+            }
+            const expectedOutput = [
+                { "ingredient_name": "Spaghetti", "quantity": "400", "unit": "g" },
+                { "ingredient_name": "Pancetta", "quantity": "150", "unit": "g" },
+                { "ingredient_name": "Eggs", "quantity": "4", "unit": "pcs" },
+                { "ingredient_name": "Parmesan Cheese", "quantity": "50", "unit": "g" },
+                { "ingredient_name": "Black Pepper", "quantity": "1", "unit": "tsp" },
+                { "ingredient_name": "Salt", "quantity": "0.5", "unit": "tsp" }
+            ]
+            expect(ingredients).toEqual(expectedOutput);
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
+        return request(app)
+        .get("/api/recipes/12/ingredients")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Recipe does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
+        return request(app)
+        .get("/api/recipes/one/ingredients")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+});
