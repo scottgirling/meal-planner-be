@@ -246,5 +246,18 @@
             "username": "alicej",
             "avatar_url": "https://example.com/avatars/alice.jpg"
         }
+    },
+    "GET /api/recipes/:recipe_id/ingredients": {
+        "description": "serves an array of recipe ingredients",
+        "queries": [],
+        "examplePath": "/api/recipes/1/ingredients",
+        "exampleResponse": [
+            { "ingredient_name": "Spaghetti", "quantity": "400", "unit": "g" },
+            { "ingredient_name": "Pancetta", "quantity": "150", "unit": "g" },
+            { "ingredient_name": "Eggs", "quantity": "4", "unit": "pcs" },
+            { "ingredient_name": "Parmesan Cheese", "quantity": "50", "unit": "g" },
+            { "ingredient_name": "Black Pepper", "quantity": "1", "unit": "tsp" },
+            { "ingredient_name": "Salt", "quantity": "0.5", "unit": "tsp" }
+        ]
     }
 }
