@@ -480,3 +480,49 @@ describe("GET /api/recipes/:recipe_id/tags", () => {
         });
     });
 });
+
+describe("GET /api/users/:user_id", () => {
+    test("200: responds with an individual user object, with the appropriate properties and status code", () => {
+        return request(app)
+        .get("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123")
+        .expect(200)
+        .then((response) => {
+            const { user } = response.body as {
+                user: User
+            }
+            const expectedOutput = {
+                "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+                "user_name": "Alice Johnson",
+                "username": "alicej",
+                "email": "alice@example.com",
+                "bio": "Food lover and amateur chef. Always exploring new cuisines.",
+                "avatar_url": "https://example.com/avatars/alice.jpg",
+                "user_created_at": "2025-07-12T10:15:30.000Z",
+                "user_last_updated_at": "2025-09-01T08:00:00.000Z"
+            }
+            expect(user).toEqual(expectedOutput);
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .get("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
+        return request(app)
+        .get("/api/users/scottgirling")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+});
