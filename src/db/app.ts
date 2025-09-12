@@ -10,6 +10,7 @@ import { getEndpoints } from "../controllers/getEndpoints";
 import { getTags } from "../controllers/getTags";
 import { getRecipes } from "../controllers/getRecipes";
 import { getRecipeById } from "../controllers/getRecipeById";
+import { getIngredientsByRecipeId } from "../controllers/getIngredientsByRecipeId";
 
 app.use(cors());
 
@@ -17,6 +18,7 @@ app.get("/api", getEndpoints);
 app.get("/api/tags", getTags);
 app.get("/api/recipes", getRecipes);
 app.get("/api/recipes/:recipe_id", getRecipeById);
+app.get("/api/recipes/:recipe_id/ingredients", getIngredientsByRecipeId);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
