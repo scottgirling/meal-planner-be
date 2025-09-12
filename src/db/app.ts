@@ -13,6 +13,7 @@ import { getRecipeById } from "../controllers/getRecipeById";
 import { getIngredientsByRecipeId } from "../controllers/getIngredientsByRecipeId";
 import { getTagsByRecipeId } from "../controllers/getTagsByRecipeId";
 import { getUserById } from "../controllers/getUserById";
+import { getUserFavouriteRecipes } from "../controllers/getUserFavouriteRecipes";
 
 app.use(cors());
 
@@ -23,6 +24,7 @@ app.get("/api/recipes/:recipe_id", getRecipeById);
 app.get("/api/recipes/:recipe_id/ingredients", getIngredientsByRecipeId);
 app.get("/api/recipes/:recipe_id/tags", getTagsByRecipeId);
 app.get("/api/users/:user_id", getUserById);
+app.get("/api/user_favourite_recipes/:user_id", getUserFavouriteRecipes);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
