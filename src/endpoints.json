@@ -224,5 +224,27 @@
                 "is_recipe_public": false
             }
         ]
+    },
+    "GET /api/recipes/:recipe_id": {
+        "description": "serves an individual recipe object, returning relevant columns from the 'users' table too",
+        "queries": [],
+        "examplePath": "/api/recipes/1",
+        "exampleResponse": {
+            "recipe_name": "Spaghetti Carbonara",
+            "recipe_slug": "spaghetti-carbonara",
+            "instructions": "Boil pasta. Cook pancetta. Mix eggs and cheese. Combine everything and serve.",
+            "prep_time": 15,
+            "cook_time": 20,
+            "votes": 4,
+            "servings": 4,
+            "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_created_at": "2025-08-15T14:23:00.000Z",
+            "recipe_last_updated_at": "2025-09-01T09:15:00.000Z",
+            "recipe_img_url": "https://example.com/images/spaghetti-carbonara.jpg",
+            "difficulty": 3,
+            "is_recipe_public": true,
+            "username": "alicej",
+            "avatar_url": "https://example.com/avatars/alice.jpg"
+        }
     }
 }
