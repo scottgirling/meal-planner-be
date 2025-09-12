@@ -4,10 +4,12 @@ import { Recipe } from "../types";
 import { checkTagExists } from "../utils/checkTagExists";
 
 export const getRecipes = (request: Request, response: Response, next: NextFunction) => {
-    const { sort_by, order, tag } = request.query as {
+    const { sort_by, order, tag, limit, p } = request.query as {
         sort_by?: string;
         order?: string;
-        tag?: string
+        tag?: string;
+        limit?: number;
+        p?: number
     };
 
     if (tag) {
@@ -17,7 +19,7 @@ export const getRecipes = (request: Request, response: Response, next: NextFunct
                 .catch((error: Error) => {
                     next(error);
                 });
-            })
+            });
         } else {
             checkTagExists(tag)
             .catch((error: Error) => {
@@ -26,7 +28,7 @@ export const getRecipes = (request: Request, response: Response, next: NextFunct
         }
     }
 
-    selectRecipes(sort_by, order, tag)
+    selectRecipes(sort_by, order, tag, limit, p)
     .then((recipes: Recipe[]) => {
         return response.status(200).send({ recipes });
     })

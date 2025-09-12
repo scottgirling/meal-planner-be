@@ -1,4 +1,5 @@
 export interface CustomError extends Error {
     status?: number;
-    msg?: string
+    msg?: string;
+    code?: string
 }
