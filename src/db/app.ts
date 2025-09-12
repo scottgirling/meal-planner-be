@@ -9,12 +9,14 @@ export const app = express();
 import { getEndpoints } from "../controllers/getEndpoints";
 import { getTags } from "../controllers/getTags";
 import { getRecipes } from "../controllers/getRecipes";
+import { getRecipeById } from "../controllers/getRecipeById";
 
 app.use(cors());
 
 app.get("/api", getEndpoints);
 app.get("/api/tags", getTags);
 app.get("/api/recipes", getRecipes);
+app.get("/api/recipes/:recipe_id", getRecipeById);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
@@ -24,7 +26,7 @@ app.use((error: CustomError, request: Request, response: Response, next: NextFun
 });
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
-    if (error.code === "42703") {
+    if (error.code === "42703" || error.code === "22P02") {
         response.status(400).send({ msg: "Invalid data type." });
     }
 })
