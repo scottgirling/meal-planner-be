@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { selectRecipes } from "../models/selectRecipes";
+import { findAllRecipes } from "../models/findAllRecipes";
 import { Recipe } from "../types";
 import { checkTagExists } from "../utils/checkTagExists";
 
@@ -28,7 +28,7 @@ export const getRecipes = (request: Request, response: Response, next: NextFunct
         }
     }
 
-    selectRecipes(sort_by, order, tag, limit, p)
+    findAllRecipes(sort_by, order, tag, limit, p)
     .then((recipes: Recipe[]) => {
         return response.status(200).send({ recipes });
     })

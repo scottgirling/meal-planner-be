@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { selectUserFavouriteRecipes } from "../models/selectUserFavouriteRecipes"
+import { findFavouriteRecipesByUserId } from "../models/findFavouriteRecipesByUserId"
 import { Recipe } from "../types";
 import { checkUserExists } from "../utils/checkUserExists";
 
@@ -11,7 +11,7 @@ export const getUserFavouriteRecipes = (request: Request, response: Response, ne
         next(error);
     })
 
-    selectUserFavouriteRecipes(user_id)
+    findFavouriteRecipesByUserId(user_id)
     .then((recipes: Recipe[]) => {
         return response.status(200).send({ recipes });
     })

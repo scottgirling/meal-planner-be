@@ -17,7 +17,8 @@ import type {
     Tag,
     UserFavouriteRecipe, 
     User,
-    AdditionalRecipeInfo
+    AdditionalRecipeInfo,
+    UserMealPlanRecipe
 } from "../types/index.js";
 
 beforeEach(async () => {
@@ -527,10 +528,10 @@ describe("GET /api/users/:user_id", () => {
     });
 });
 
-describe("GET /api/user_favourite_recipes/:user_id", () => {
+describe("GET /api/users/:user_id/favourite_recipes", () => {
     test("200: responds with an array of recipe objects displaying the relevant user's favourite recipes, as well as an appropriate status code", () => {
         return request(app)
-        .get("/api/user_favourite_recipes/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123")
+        .get("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
         .expect(200)
         .then((response) => {
             const { recipes } = response.body as {
@@ -592,7 +593,7 @@ describe("GET /api/user_favourite_recipes/:user_id", () => {
     });
     test("200: responds with an empty array and an appropriate status code when passed a valid 'user_id' but no 'favourites' currently exist on it", () => {
         return request(app)
-        .get("/api/user_favourite_recipes/5a7f5b89-df26-4c92-8f4e-9a2cbe742456")
+        .get("/api/users/5a7f5b89-df26-4c92-8f4e-9a2cbe742456/favourite_recipes")
         .expect(200)
         .then((response) => {
             const { recipes } = response.body as {
@@ -604,7 +605,7 @@ describe("GET /api/user_favourite_recipes/:user_id", () => {
     });
     test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
         return request(app)
-        .get("/api/user_favourite_recipes/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2")
+        .get("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/favourite_recipes")
         .expect(404)
         .then((response) => {
             const { msg } = response.body as {
@@ -615,7 +616,94 @@ describe("GET /api/user_favourite_recipes/:user_id", () => {
     });
     test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
         return request(app)
-        .get("/api/user_favourite_recipes/scottgirling")
+        .get("/api/users/scottgirling/favourite_recipes")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+});
+
+describe("GET /api/users/:user_id/meal_plans", () => {
+    test("200: responds with an array of meal plans (each meal plan contains a number of recipe objects) for the relevant user, as well as an appropriate status code", () => {
+        return request(app)
+        .get("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/meal_plans")
+        .expect(200)
+        .then((response) => {
+            const { meal_plans } = response.body as {
+                meal_plans: UserMealPlanRecipe[]
+            }
+            const expectedOutput = [
+                {
+                    "meal_plan_id": 1,
+                    "scheduled_date": "2025-10-10",
+                    "recipe_id": 1,
+                    "recipe_name": "Spaghetti Carbonara",
+                    "recipe_slug": "spaghetti-carbonara",
+                    "instructions": "Boil pasta. Cook pancetta. Mix eggs and cheese. Combine everything and serve.",
+                    "prep_time": 15,
+                    "cook_time": 20,
+                    "votes": 4,
+                    "servings": 4,
+                    "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+                    "recipe_created_at": "2025-08-15T14:23:00.000Z",
+                    "recipe_last_updated_at": "2025-09-01T09:15:00.000Z",
+                    "recipe_img_url": "https://example.com/images/spaghetti-carbonara.jpg",
+                    "difficulty": 3,
+                    "is_recipe_public": true
+                },
+                {
+                    "meal_plan_id": 1,
+                    "scheduled_date": "2025-10-11",
+                    "recipe_id": 2,
+                    "recipe_name": "Classic Pancakes",
+                    "recipe_slug": "classic-pancakes",
+                    "instructions": "Mix dry ingredients. Add milk and eggs. Cook on griddle until golden brown.",
+                    "prep_time": 10,
+                    "cook_time": 15,
+                    "votes": 7,
+                    "servings": 6,
+                    "recipe_created_by": "5a7f5b89-df26-4c92-8f4e-9a2cbe742456",
+                    "recipe_created_at": "2025-07-10T08:05:00.000Z",
+                    "recipe_last_updated_at": "2025-08-30T11:42:00.000Z",
+                    "recipe_img_url": "https://example.com/images/classic-pancakes.jpg",
+                    "difficulty": 2,
+                    "is_recipe_public": true
+                }
+            ]
+            expect(meal_plans.length).toBe(2);
+            expect(meal_plans).toEqual(expectedOutput);
+        });
+    });
+    test("200: responds with an empty array and an appropriate status code when passed a valid 'user_id' but no 'meal_plans' currently exist on it", () => {
+        return request(app)
+        .get("/api/users/91b7c7e4-3f65-4c1e-92ad-6e4a734fced7/meal_plans")
+        .expect(200)
+        .then((response) => {
+            const { meal_plans } = response.body as {
+                meal_plans: UserMealPlanRecipe[]
+            }
+            expect(meal_plans.length).toBe(0);
+            expect(meal_plans).toEqual([]);
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .get("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/meal_plans")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
+        return request(app)
+        .get("/api/users/scottgirling/meal_plans")
         .expect(400)
         .then((response) => {
             const { msg } = response.body as {

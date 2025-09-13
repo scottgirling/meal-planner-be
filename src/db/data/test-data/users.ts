@@ -20,5 +20,15 @@ export const testUsers: User[] = [
     "avatar_url": "https://example.com/avatars/bob.jpg",
     "user_created_at": "2025-06-25T14:45:00.000Z",
     "user_last_updated_at": "2025-08-20T17:30:00.000Z"
+  },
+  {
+    "user_id": "91b7c7e4-3f65-4c1e-92ad-6e4a734fced7",
+    "user_name": "Jasmine Lee",
+    "username": "jaslee",
+    "email": "jasmine.lee@example.org",
+    "bio": "Food scientist turned chef. Obsessed with fermentation, sourdough, and pickling everything.",
+    "avatar_url": "https://example.com/avatars/jasmine.jpg",
+    "user_created_at": "2025-03-11T08:30:00.000Z",
+    "user_last_updated_at": "2025-08-28T15:05:00.000Z"
   }
 ]

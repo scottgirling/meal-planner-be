@@ -10,3 +10,4 @@ export type { Tag } from "./tag";
 export type { UserFavouriteRecipe } from "./user-favourite-recipe";
 export type { User } from "./user";
 export type { AdditionalRecipeInfo } from "./additional-recipe-info";
+export type { UserMealPlanRecipe } from "./user-meal-plan-recipe";
