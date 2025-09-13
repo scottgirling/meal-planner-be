@@ -1,7 +1,7 @@
 import db from "../db/connection.js";
 import { Recipe } from "../types/recipe.js";
 
-export const selectRecipes = (sort_by: string = "votes", order: string = "desc", tag: string | undefined, limit: number = 20, p: number = 1) => {
+export const findAllRecipes = (sort_by: string = "votes", order: string = "desc", tag: string | undefined, limit: number = 20, p: number = 1) => {
 
     const offset = (p - 1) * limit;
     const validSortBy = ["prep_time", "cook_time", "votes", "created_at", "difficulty"];

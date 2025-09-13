@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { selectRecipeById } from "../models/selectRecipeById";
+import { findRecipeById } from "../models/findRecipeById";
 import { AdditionalRecipeInfo } from "../types";
 
-export const getRecipeById = (request: Request, response: Response, next: NextFunction) => {
+export const getRecipe = (request: Request, response: Response, next: NextFunction) => {
     const { recipe_id } = request.params;
-    selectRecipeById(recipe_id)
+    findRecipeById(recipe_id)
     .then((recipe: AdditionalRecipeInfo) => {
         response.status(200).send({ recipe });
     })

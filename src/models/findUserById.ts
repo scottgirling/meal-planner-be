@@ -1,7 +1,7 @@
 import db from "../db/connection.js";
 import { User } from "../types/user.js";
 
-export const selectUserById = (user_id: string) => {
+export const findUserById = (user_id: string) => {
     return db.query("SELECT * FROM users WHERE user_id = $1", [user_id])
     .then(({ rows } : { rows: User[] }) => {
         if (!rows.length) {
