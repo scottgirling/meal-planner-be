@@ -844,3 +844,49 @@ describe("GET /api/users/:user_id/shopping_lists", () => {
         });
     });
 });
+
+describe("POST /api/recipes", () => {
+    test.skip("201: responds with the newly created recipe, with the appropriate properties and status code", () => {
+        return request(app)
+        .post("/api/recipes")
+        .expect(201)
+        .send({
+            "recipe_name": "Grilled Chicken Salad",
+            "recipe_slug": "grilled-chicken-salad",
+            "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
+            "prep_time": 20,
+            "cook_time": 15,
+            "votes": 7,
+            "servings": 2,
+            "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_created_at": "2025-09-14T10:00:00.000Z",
+            "recipe_last_updated_at": "2025-09-14T10:00:00.000Z",
+            "recipe_img_url": "https://example.com/images/grilled-chicken-salad.jpg",
+            "difficulty": 2,
+            "is_recipe_public": true
+        })
+        .then((response) => {
+            const { recipe } = response.body as {
+                recipe: Recipe
+            }
+            const expectedOutput = {
+                "recipe_id": 5,
+                "recipe_name": "Grilled Chicken Salad",
+                "recipe_slug": "grilled-chicken-salad",
+                "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
+                "prep_time": 20,
+                "cook_time": 15,
+                "votes": 7,
+                "servings": 2,
+                "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+                "recipe_created_at": "2025-09-14T10:00:00.000Z",
+                "recipe_last_updated_at": "2025-09-14T10:00:00.000Z",
+                "recipe_img_url": "https://example.com/images/grilled-chicken-salad.jpg",
+                "difficulty": 2,
+                "is_recipe_public": true
+            }
+            expect(recipe).toEqual(expectedOutput);
+            expect(Object.entries(recipe).length).toBe(14);
+        });
+    });
+});

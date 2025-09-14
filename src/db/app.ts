@@ -16,8 +16,10 @@ import { getUser } from "../controllers/getUser";
 import { getUserFavouriteRecipes } from "../controllers/getUserFavouriteRecipes";
 import { getUserMealPlans } from "../controllers/getUserMealPlans";
 import { getUserShoppingLists } from "../controllers/getUserShoppingLists";
+import { postRecipe } from "../controllers/postRecipe";
 
 app.use(cors());
+app.use(express.json());
 
 app.get("/api", getEndpoints);
 app.get("/api/tags", getTags);
@@ -29,6 +31,7 @@ app.get("/api/users/:user_id", getUser);
 app.get("/api/users/:user_id/favourite_recipes", getUserFavouriteRecipes);
 app.get("/api/users/:user_id/meal_plans", getUserMealPlans);
 app.get("/api/users/:user_id/shopping_lists", getUserShoppingLists);
+app.post("/api/recipes", postRecipe);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
