@@ -628,7 +628,7 @@ describe("GET /api/users/:user_id/favourite_recipes", () => {
 });
 
 describe("GET /api/users/:user_id/meal_plans", () => {
-    test("200: responds with an array of meal plans (each meal plan contains a number of recipe objects) for the relevant user, as well as an appropriate status code", () => {
+    test("200: responds with an array of recipe objects (with each recipe belonging to a user's unique 'meal_plan') for the relevant user, as well as an appropriate status code", () => {
         return request(app)
         .get("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/meal_plans")
         .expect(200)
@@ -704,6 +704,137 @@ describe("GET /api/users/:user_id/meal_plans", () => {
     test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
         return request(app)
         .get("/api/users/scottgirling/meal_plans")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+});
+
+describe("GET /api/users/:user_id/shopping_lists", () => {
+    test("200: responds with an array of shopping list ingredient objects (with each ingredient belonging to a user's unique 'shopping_list', as well as an appropriate status code", () => {
+        return request(app)
+        .get("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists")
+        .expect(200)
+        .then((response) => {
+            const { items } = response.body as {
+                items: ShoppingListIngredient[]
+            }
+            const expectedOutput = [
+                {
+                    "shopping_list_ingredient_id": 1,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 1,
+                    "quantity": "400",
+                    "unit": "g",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "Spaghetti"
+                },
+                {
+                    "shopping_list_ingredient_id": 2,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 2,
+                    "quantity": "150",
+                    "unit": "g",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "Pancetta"
+                },
+                {
+                    "shopping_list_ingredient_id": 3,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 3,
+                    "quantity": "4",
+                    "unit": "pcs",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "Eggs"
+                },
+                {
+                    "shopping_list_ingredient_id": 4,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 4,
+                    "quantity": "50",
+                    "unit": "g",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "Parmesan Cheese"
+                },
+                {
+                    "shopping_list_ingredient_id": 5,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 5,
+                    "quantity": "1",
+                    "unit": "tsp",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "Black Pepper"
+                },
+                {
+                    "shopping_list_ingredient_id": 6,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 6,
+                    "quantity": "0.5",
+                    "unit": "tsp",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "Salt"
+                },
+                {
+                    "shopping_list_ingredient_id": 7,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 7,
+                    "quantity": "200",
+                    "unit": "g",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "All-purpose Flour"
+                },
+                {
+                    "shopping_list_ingredient_id": 8,
+                    "shopping_list_id": 1,
+                    "ingredient_id": 8,
+                    "quantity": "2",
+                    "unit": "tsp",
+                    "is_checked_off": false,
+                    "meal_plan_id": 1,
+                    "ingredient_name": "Baking Powder"
+                }
+            ]
+            expect(items.length).toBe(8);
+            expect(items).toEqual(expectedOutput);
+        });
+    });
+    test("200: responds with an empty array and an appropriate status code when passed a valid 'user_id' but no 'shopping_lists' currently exist on it", () => {
+        return request(app)
+        .get("/api/users/91b7c7e4-3f65-4c1e-92ad-6e4a734fced7/shopping_lists")
+        .expect(200)
+        .then((response) => {
+            const { items } = response.body as {
+                items: ShoppingListIngredient[]
+            }
+            expect(items.length).toBe(0);
+            expect(items).toEqual([]);
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .get("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/shopping_lists")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id", () => {
+        return request(app)
+        .get("/api/users/scottgirling/shopping_lists")
         .expect(400)
         .then((response) => {
             const { msg } = response.body as {
