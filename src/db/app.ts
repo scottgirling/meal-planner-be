@@ -15,6 +15,7 @@ import { getRecipeTags } from "../controllers/getRecipeTags";
 import { getUser } from "../controllers/getUser";
 import { getUserFavouriteRecipes } from "../controllers/getUserFavouriteRecipes";
 import { getUserMealPlans } from "../controllers/getUserMealPlans";
+import { getUserShoppingLists } from "../controllers/getUserShoppingLists";
 
 app.use(cors());
 
@@ -27,6 +28,7 @@ app.get("/api/recipes/:recipe_id/tags", getRecipeTags);
 app.get("/api/users/:user_id", getUser);
 app.get("/api/users/:user_id/favourite_recipes", getUserFavouriteRecipes);
 app.get("/api/users/:user_id/meal_plans", getUserMealPlans);
+app.get("/api/users/:user_id/shopping_lists", getUserShoppingLists);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {

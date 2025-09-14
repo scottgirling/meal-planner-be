@@ -393,5 +393,92 @@
                 "is_recipe_public": true
             }
         ]
+    },
+    "GET /api/users/:user_id/shopping_lists": {
+        "description": "serves an array of shopping list ingredient objects displaying the relevant user's shopping list history",
+        "queries": [],
+        "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists",
+        "exampleResponse": [
+            {
+                "shopping_list_ingredient_id": 1,
+                "shopping_list_id": 1,
+                "ingredient_id": 1,
+                "quantity": "400",
+                "unit": "g",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "Spaghetti"
+            },
+            {
+                "shopping_list_ingredient_id": 2,
+                "shopping_list_id": 1,
+                "ingredient_id": 2,
+                "quantity": "150",
+                "unit": "g",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "Pancetta"
+            },
+            {
+                "shopping_list_ingredient_id": 3,
+                "shopping_list_id": 1,
+                "ingredient_id": 3,
+                "quantity": "4",
+                "unit": "pcs",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "Eggs"
+            },
+            {
+                "shopping_list_ingredient_id": 4,
+                "shopping_list_id": 1,
+                "ingredient_id": 4,
+                "quantity": "50",
+                "unit": "g",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "Parmesan Cheese"
+            },
+            {
+                "shopping_list_ingredient_id": 5,
+                "shopping_list_id": 1,
+                "ingredient_id": 5,
+                "quantity": "1",
+                "unit": "tsp",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "Black Pepper"
+            },
+            {
+                "shopping_list_ingredient_id": 6,
+                "shopping_list_id": 1,
+                "ingredient_id": 6,
+                "quantity": "0.5",
+                "unit": "tsp",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "Salt"
+            },
+            {
+                "shopping_list_ingredient_id": 7,
+                "shopping_list_id": 1,
+                "ingredient_id": 7,
+                "quantity": "200",
+                "unit": "g",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "All-purpose Flour"
+            },
+            {
+                "shopping_list_ingredient_id": 8,
+                "shopping_list_id": 1,
+                "ingredient_id": 8,
+                "quantity": "2",
+                "unit": "tsp",
+                "is_checked_off": false,
+                "meal_plan_id": 1,
+                "ingredient_name": "Baking Powder"
+            }
+        ]
     }
 }

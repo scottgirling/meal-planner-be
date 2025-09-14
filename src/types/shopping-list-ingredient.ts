@@ -4,5 +4,7 @@ export interface ShoppingListIngredient {
     ingredient_id: number;
     quantity: number;
     unit: string;
-    is_checked_off: boolean
+    is_checked_off: boolean;
+    meal_plan_id?: number;
+    ingredient_name?: string
 }
