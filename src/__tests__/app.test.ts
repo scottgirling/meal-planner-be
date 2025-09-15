@@ -946,3 +946,115 @@ describe("POST /api/recipes", () => {
         });
     });
 });
+
+describe("POST /api/recipe_tags", () => {
+    test("201: responds with the newly created recipe-tag entry when a single tag is added to a recipe, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/recipe_tags")
+        .expect(201)
+        .send({
+            "recipe_id": 1,
+            "tag_ids": [6]
+        })
+        .then((response) => {
+            const { recipe_tags } = response.body as {
+                recipe_tags: RecipeTag
+            }
+            const expectedOutput = [
+                {
+                    "recipe_id": 1,
+                    "tag_id": 6
+                }
+            ]
+            expect(recipe_tags).toEqual(expectedOutput);
+        });
+    });
+    test("201: responds with the newly created recipe-tag entries when more than one tag is added to a recipe, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/recipe_tags")
+        .expect(201)
+        .send({
+            "recipe_id": 1,
+            "tag_ids": [2, 3, 4]
+        })
+        .then((response) => {
+            const { recipe_tags } = response.body as {
+                recipe_tags: RecipeTag[]
+            }
+            const expectedOutput = [
+                {
+                    "recipe_id": 1,
+                    "tag_id": 2
+                },
+                {
+                    "recipe_id": 1,
+                    "tag_id": 3
+                },
+                {
+                    "recipe_id": 1,
+                    "tag_id": 4
+                }
+            ]
+            expect(recipe_tags).toEqual(expectedOutput);
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .post("/api/recipe_tags")
+        .expect(400)
+        .send({
+            "tag_ids": [1, 2]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+        return request(app)
+        .post("/api/recipe_tags")
+        .expect(400)
+        .send({
+            "recipe_id": 1, 
+            "tag_ids": 6
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the 'tag_ids' field is an empty array", () => {
+        return request(app)
+        .post("/api/recipe_tags")
+        .expect(400)
+        .send({
+            "recipe_id": 1,
+            "tag_ids": []
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Incomplete data.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when the request body contains a valid but non-existent 'recipe' or 'tag' id", () => {
+        return request(app)
+        .post("/api/recipe_tags")
+        .expect(404)
+        .send({
+            "recipe_id": 1,
+            "tag_ids": [11, 12]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - one or more ID not found.");
+        });
+    });
+});

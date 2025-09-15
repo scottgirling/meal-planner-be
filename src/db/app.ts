@@ -17,6 +17,7 @@ import { getUserFavouriteRecipes } from "../controllers/getUserFavouriteRecipes"
 import { getUserMealPlans } from "../controllers/getUserMealPlans";
 import { getUserShoppingLists } from "../controllers/getUserShoppingLists";
 import { postRecipe } from "../controllers/postRecipe";
+import { postRecipeTag } from "../controllers/postRecipeTag";
 
 app.use(cors());
 app.use(express.json());
@@ -32,6 +33,7 @@ app.get("/api/users/:user_id/favourite_recipes", getUserFavouriteRecipes);
 app.get("/api/users/:user_id/meal_plans", getUserMealPlans);
 app.get("/api/users/:user_id/shopping_lists", getUserShoppingLists);
 app.post("/api/recipes", postRecipe);
+app.post("/api/recipe_tags", postRecipeTag);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
@@ -50,5 +52,19 @@ app.use((error: CustomError, request: Request, response: Response, next: NextFun
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.code === "23502") {
         response.status(400).send({ msg: "Invalid request - missing field(s)." });
+    }
+    next(error);
+});
+
+app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
+    if (error.code === "23503") {
+        response.status(404).send({ msg: "Invalid request - one or more ID not found." });
+    }
+    next(error);
+});
+
+app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
+    if (error.code === "42601") {
+        response.status(400).send({ msg: "Incomplete data." });
     }
 });
