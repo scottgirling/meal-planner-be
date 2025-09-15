@@ -17,7 +17,6 @@ export const postRecipeTag = (request: Request, response: Response, next: NextFu
         return response.status(201).send({ recipe_tags });
     })
     .catch((error: Error) => {
-        console.log(error, "<<<")
         next(error);
     });
 }
