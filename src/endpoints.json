@@ -516,5 +516,28 @@
             "difficulty": 2,
             "is_recipe_public": true
         }
+    },
+    "POST /api/recipe_tags": {
+        "description": "serves an array of the newly created recipe-tag objects",
+        "queries": [],
+        "examplePath": "/api/recipe_tags",
+        "exampleRequestBody": {
+            "recipe_id": 1,
+            "tag_ids": [2, 3, 4]
+        },
+        "exampleResponse": [
+            {
+                "recipe_id": 1,
+                "tag_id": 2
+            },
+            {
+                "recipe_id": 1,
+                "tag_id": 3
+            },
+            {
+                "recipe_id": 1,
+                "tag_id": 4
+            }
+        ]
     }
 }
