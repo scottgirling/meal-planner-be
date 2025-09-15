@@ -44,4 +44,11 @@ app.use((error: CustomError, request: Request, response: Response, next: NextFun
     if (error.code === "42703" || error.code === "22P02") {
         response.status(400).send({ msg: "Invalid data type." });
     }
-})
+    next(error);
+});
+
+app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
+    if (error.code === "23502") {
+        response.status(400).send({ msg: "Invalid request - missing field(s)." });
+    }
+});

@@ -480,5 +480,41 @@
                 "ingredient_name": "Baking Powder"
             }
         ]
+    },
+    "POST /api/recipes": {
+        "description": "serves the newly created recipe object",
+        "queries": [],
+        "examplePath": "/api/recipes",
+        "exampleRequestBody": {
+            "recipe_name": "Grilled Chicken Salad",
+            "recipe_slug": "grilled-chicken-salad",
+            "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
+            "prep_time": 20,
+            "cook_time": 15,
+            "votes": 0,
+            "servings": 2,
+            "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_created_at": "2025-09-14T10:00:00.000Z",
+            "recipe_last_updated_at": "2025-09-14T10:00:00.000Z",
+            "recipe_img_url": "https://example.com/images/grilled-chicken-salad.jpg",
+            "difficulty": 2,
+            "is_recipe_public": true
+        },
+        "exampleResponse": {
+            "recipe_id": 5,
+            "recipe_name": "Grilled Chicken Salad",
+            "recipe_slug": "grilled-chicken-salad",
+            "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
+            "prep_time": 20,
+            "cook_time": 15,
+            "votes": 0,
+            "servings": 2,
+            "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_created_at": "2025-09-14T10:00:00.000Z",
+            "recipe_last_updated_at": "2025-09-14T10:00:00.000Z",
+            "recipe_img_url": "https://example.com/images/grilled-chicken-salad.jpg",
+            "difficulty": 2,
+            "is_recipe_public": true
+        }
     }
 }
