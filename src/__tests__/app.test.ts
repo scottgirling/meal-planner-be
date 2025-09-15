@@ -846,7 +846,7 @@ describe("GET /api/users/:user_id/shopping_lists", () => {
 });
 
 describe("POST /api/recipes", () => {
-    test.skip("201: responds with the newly created recipe, with the appropriate properties and status code", () => {
+    test("201: responds with the newly created recipe, with the appropriate properties and status code", () => {
         return request(app)
         .post("/api/recipes")
         .expect(201)
@@ -856,7 +856,7 @@ describe("POST /api/recipes", () => {
             "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
             "prep_time": 20,
             "cook_time": 15,
-            "votes": 7,
+            "votes": 0,
             "servings": 2,
             "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
             "recipe_created_at": "2025-09-14T10:00:00.000Z",
@@ -876,7 +876,7 @@ describe("POST /api/recipes", () => {
                 "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
                 "prep_time": 20,
                 "cook_time": 15,
-                "votes": 7,
+                "votes": 0,
                 "servings": 2,
                 "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
                 "recipe_created_at": "2025-09-14T10:00:00.000Z",
@@ -887,6 +887,87 @@ describe("POST /api/recipes", () => {
             }
             expect(recipe).toEqual(expectedOutput);
             expect(Object.entries(recipe).length).toBe(14);
+        });
+    });
+    test("201: responds with the newly created recipe object when the 'recipe_img_url has been omitted from the request body, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/recipes")
+        .expect(201)
+        .send({
+            "recipe_name": "Grilled Chicken Salad",
+            "recipe_slug": "grilled-chicken-salad",
+            "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
+            "prep_time": 20,
+            "cook_time": 15,
+            "votes": 0,
+            "servings": 2,
+            "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_created_at": "2025-09-14T10:00:00.000Z",
+            "recipe_last_updated_at": "2025-09-14T10:00:00.000Z",
+            "difficulty": 2,
+            "is_recipe_public": true
+        })
+        .then((response) => {
+            const { recipe } = response.body as {
+                recipe: Recipe
+            }
+            const expectedOutput = {
+                "recipe_id": 5,
+                "recipe_name": "Grilled Chicken Salad",
+                "recipe_slug": "grilled-chicken-salad",
+                "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
+                "prep_time": 20,
+                "cook_time": 15,
+                "votes": 0,
+                "servings": 2,
+                "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+                "recipe_created_at": "2025-09-14T10:00:00.000Z",
+                "recipe_last_updated_at": "2025-09-14T10:00:00.000Z",
+                "recipe_img_url": null,
+                "difficulty": 2,
+                "is_recipe_public": true
+            }
+            expect(recipe).toEqual(expectedOutput);
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .post("/api/recipes")
+        .expect(400)
+        .send({
+            "recipe_name": "Grilled Chicken Salad"
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+        return request(app)
+        .post("/api/recipes")
+        .expect(400)
+        .send({
+            "recipe_name": "Grilled Chicken Salad",
+            "recipe_slug": "grilled-chicken-salad",
+            "instructions": "Grill chicken. Chop vegetables. Mix dressing. Combine and serve chilled.",
+            "prep_time": 20,
+            "cook_time": 15,
+            "votes": 0,
+            "servings": "two",
+            "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_created_at": "2025-09-14T10:00:00.000Z",
+            "recipe_last_updated_at": "2025-09-14T10:00:00.000Z",
+            "recipe_img_url": "https://example.com/images/grilled-chicken-salad.jpg",
+            "difficulty": 2,
+            "is_recipe_public": true
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
         });
     });
 });
