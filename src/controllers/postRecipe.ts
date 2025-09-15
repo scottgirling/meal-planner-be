@@ -12,8 +12,6 @@ export const postRecipe = (request: Request, response: Response, next: NextFunct
         votes, 
         servings, 
         recipe_created_by, 
-        recipe_created_at, 
-        recipe_last_updated_at, 
         recipe_img_url, 
         difficulty, 
         is_recipe_public 
@@ -28,8 +26,6 @@ export const postRecipe = (request: Request, response: Response, next: NextFunct
         votes, 
         servings, 
         recipe_created_by, 
-        recipe_created_at, 
-        recipe_last_updated_at, 
         recipe_img_url, 
         difficulty, 
         is_recipe_public
