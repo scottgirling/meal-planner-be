@@ -1058,3 +1058,25 @@ describe("POST /api/recipe_tags", () => {
         });
     });
 });
+
+describe("POST /api/tags", () => {
+    test("201: responds with the newly created 'tag' object, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/tags")
+        .expect(201)
+        .send({
+            "tag_name": "Stir Fry",
+            "tag_slug": "stir-fry"
+        })
+        .then((response) => {
+            const { tag } = response.body as {
+                tag: Tag
+            }
+            expect(tag).toHaveProperty("tag_name", "Stir Fry");
+            expect(tag).toHaveProperty("tag_slug", "stir-fry");
+            expect(tag).toHaveProperty("tag_created_at", expect.any(String));
+            expect(tag).toHaveProperty("tag_last_updated_at", expect.any(String));
+            expect(Object.entries(tag).length).toBe(5);
+        });
+    });
+});
