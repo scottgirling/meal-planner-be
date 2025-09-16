@@ -1079,4 +1079,33 @@ describe("POST /api/tags", () => {
             expect(Object.entries(tag).length).toBe(5);
         });
     });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .post("/api/tags")
+        .expect(400)
+        .send({ 
+            "tag_name": "Stir Fry"
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+        return request(app)
+        .post("/api/tags")
+        .expect(400)
+        .send({
+            "tag_name": "Stir Fry",
+            "tag_slug": 4
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
 });
