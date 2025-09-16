@@ -1003,7 +1003,7 @@ describe("POST /api/recipe_tags", () => {
         .post("/api/recipe_tags")
         .expect(400)
         .send({
-            "tag_ids": [1, 2]
+            "recipe_id": 1
         })
         .then((response) => {
             const { msg } = response.body as {
@@ -1106,6 +1106,135 @@ describe("POST /api/tags", () => {
                 msg: string
             }
             expect(msg).toBe("Invalid data type.");
+        });
+    });
+});
+
+describe("POST /api/recipe_ingredients", () => {
+    test("201: responds with the newly created recipe-ingredient entry when a single ingredient is added to a recipe, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/recipe_ingredients")
+        .expect(201)
+        .send({ 
+            "recipe_id": 3,
+            "ingredient_ids": [21],
+            "quantity": [3],
+            "unit": ["slices"]
+        })
+        .then((response) => {
+            const { recipe_ingredients } = response.body as {
+                recipe_ingredients: RecipeIngredient[]
+            }
+            const expectedOutput = [
+                {
+                    "recipe_ingredient_id": 26,
+                    "recipe_id": 3, 
+                    "ingredient_id": 21, 
+                    "quantity": "3", 
+                    "unit": "slices" 
+                }
+            ]
+            expect(recipe_ingredients).toEqual(expectedOutput);
+        });
+    });
+    test("201: responds with the newly created recipe-ingredient entries when more than one ingredient is added to a recipe, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/recipe_ingredients")
+        .expect(201)
+        .send({
+            "recipe_id": 3,
+            "ingredient_ids": [21, 23],
+            "quantity": [3, 1],
+            "unit": ["slices", "tbsp"]
+        })
+        .then((response) => {
+            const { recipe_ingredients } = response.body as {
+                recipe_ingredients: RecipeIngredient[]
+            }
+            const expectedOutput = [
+                {
+                    "recipe_ingredient_id": 26,
+                    "recipe_id": 3, 
+                    "ingredient_id": 21, 
+                    "quantity": "3", 
+                    "unit": "slices" 
+                },
+                {
+                    "recipe_ingredient_id": 27,
+                    "recipe_id": 3, 
+                    "ingredient_id": 23, 
+                    "quantity": "1", 
+                    "unit": "tbsp" 
+                }
+            ]
+            expect(recipe_ingredients).toEqual(expectedOutput);
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .post("/api/recipe_ingredients")
+        .expect(400)
+        .send({
+            "recipe_id": 3,
+            "ingredient_ids": [21],
+            "quantity": [3]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+        return request(app)
+        .post("/api/recipe_ingredients")
+        .expect(400)
+        .send({
+            "recipe_id": 3,
+            "ingredient_ids": 21,
+            "quantity": [3],
+            "unit": ["slices"]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the 'ingredient_ids' field is an empty array", () => {
+        return request(app)
+        .post("/api/recipe_ingredients")
+        .expect(400)
+        .send({
+            "recipe_id": 3,
+            "ingredient_ids": [],
+            "quantity": [3],
+            "unit": ["slices"]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Incomplete data.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when the request body contains a valid but non-existent 'recipe' or 'ingredient' id", () => {
+        return request(app)
+        .post("/api/recipe_ingredients")
+        .expect(404)
+        .send({
+            "recipe_id": 3,
+            "ingredient_ids": [50],
+            "quantity": [3],
+            "unit": ["slices"]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - one or more ID not found.");
         });
     });
 });
