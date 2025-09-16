@@ -8,6 +8,10 @@ export const postRecipeTag = (request: Request, response: Response, next: NextFu
         tag_ids 
     } = request.body;
 
+    if (tag_ids === undefined) {
+        return Promise.reject({ status: 400, msg: "Invalid request - missing field(s)." });
+    }
+
     if (!Array.isArray(tag_ids)) {
         return Promise.reject({ status: 400, msg: "Invalid data type." });
     }
