@@ -1391,3 +1391,82 @@ describe("POST /api/users/:user_id/favourite_recipes", () => {
         });
     });
 });
+
+describe("POST /api/users/:user_id/meal_plans", () => {
+    test("201: each new 'meal-plan-recipe' entry responds with the newly created 'meal-plan' 'id', as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/meal_plans")
+        .expect(201)
+        .send({
+            "recipe_ids": [1, 4],
+            "scheduled_dates": ["2025-10-17", "2025-10-18"]
+        })
+        .then((response) => {
+            const { formatted_meal_plan_recipes } = response.body as {
+                formatted_meal_plan_recipes: MealPlanRecipe[]
+            }
+            formatted_meal_plan_recipes.forEach((entry) => {
+                expect(entry.meal_plan_id).toBe(3)
+            });
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id", () => {
+        return request(app)
+        .post("/api/users/scottgirling/meal_plans")
+        .expect(400)
+        .send({
+            "recipe_ids": [1, 4],
+            "scheduled_dates": ["2025-10-17", "2025-10-18"]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .post("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/meal_plans")
+        .expect(404)
+        .send({
+            "recipe_ids": [1, 4],
+            "scheduled_dates": ["2025-10-17", "2025-10-18"]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+    test("201: responds with the newly created 'meal-plan-recipe' entries, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/meal_plans")
+        .expect(201)
+        .send({
+            "recipe_ids": [1, 4],
+            "scheduled_dates": ["2025-10-17", "2025-10-18"]
+        })
+        .then((response) => {
+            const { formatted_meal_plan_recipes } = response.body as {
+                formatted_meal_plan_recipes: MealPlanRecipe[]
+            }
+            const expectedOutput = [
+                {
+                    "meal_plan_recipe_id": 5,
+                    "meal_plan_id": 3,
+                    "recipe_id": 1,
+                    "scheduled_date": "2025-10-17"
+                },
+                {
+                    "meal_plan_recipe_id": 6,
+                    "meal_plan_id": 3,
+                    "recipe_id": 4,
+                    "scheduled_date": "2025-10-18"
+                }
+            ]
+            expect(formatted_meal_plan_recipes).toEqual(expectedOutput);
+        });
+    });
+});
