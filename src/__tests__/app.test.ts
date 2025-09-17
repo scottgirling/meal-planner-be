@@ -1238,3 +1238,75 @@ describe("POST /api/recipe_ingredients", () => {
         });
     });
 });
+
+describe("POST /api/ingredients", () => {
+    test("201: responds with the newly created 'ingredient' object, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/ingredients")
+        .expect(201)
+        .send({
+            "ingredient_name": "Mushrooms",
+            "ingredient_slug": "mushrooms",
+            "ingredient_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123"
+        })
+        .then((response) => {
+            const { ingredient } = response.body as {
+                ingredient: Ingredient
+            }
+            expect(ingredient).toHaveProperty("ingredient_id", 24);
+            expect(ingredient).toHaveProperty("ingredient_name", "Mushrooms");
+            expect(ingredient).toHaveProperty("ingredient_slug", "mushrooms");
+            expect(ingredient).toHaveProperty("ingredient_created_at", expect.any(String));
+            expect(ingredient).toHaveProperty("ingredient_last_updated_at", expect.any(String));
+            expect(ingredient).toHaveProperty("ingredient_created_by", "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123");
+            expect(Object.entries(ingredient).length).toBe(6);
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .post("/api/ingredients")
+        .expect(400)
+        .send({
+            "ingredient_name": "Mushrooms",
+            "ingredient_slug": "mushrooms"
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+        return request(app)
+        .post("/api/ingredients")
+        .expect(400)
+        .send({
+            "ingredient_name": 4567,
+            "ingredient_slug": 4567,
+            "ingredient_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123"
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'ingredient_created_by' value", () => {
+        return request(app)
+        .post("/api/ingredients")
+        .expect(404)
+        .send({
+            "ingredient_name": "Mushrooms",
+            "ingredient_slug": "mushrooms",
+            "ingredient_created_by": "c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2"
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+});
