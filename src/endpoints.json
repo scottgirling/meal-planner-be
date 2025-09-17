@@ -599,5 +599,18 @@
             "ingredient_last_updated_at": "2025-09-17T12:00:00Z",
             "ingredient_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123"
         }
+    },
+    "POST /api/users/:user_id/favourite_recipes": {
+        "description": "serves the newly created user-favourite-recipe object",
+        "queries": [],
+        "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes",
+        "exampleRequestBody": {
+            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_id": 3
+        },
+        "exampleResponse": {
+            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_id": 3
+        }
     }
 }
