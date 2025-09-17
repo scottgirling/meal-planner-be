@@ -1310,3 +1310,84 @@ describe("POST /api/ingredients", () => {
         });
     });
 });
+
+describe("POST /api/users/:user_id/favourite_recipes", () => {
+    test("201: responds with the newly created 'user-favourite-recipe' entry, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
+        .expect(201)
+        .send({
+            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_id": 3
+        })
+        .then((response) => {
+            const { user_favourite_recipe } = response.body as {
+                user_favourite_recipe: UserFavouriteRecipe
+            }
+            const expectedOutput = {
+                "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+                "recipe_id": 3
+            }
+            expect(user_favourite_recipe).toEqual(expectedOutput);
+        });
+    });
+    test("409: responds with an appropriate status code and error message when passed data that already exists in the 'user_favourite_recipes' table (i.e. where a user 'favourites' a recipe they have already favourited", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
+        .expect(409)
+        .send({
+            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_id": 4
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Identical data already exists in table.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
+        .expect(400)
+        .send({
+            "recipe_id": 3
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when the request body contains a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .post("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/favourite_recipes")
+        .expect(404)
+        .send({
+            "user_id": "c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2",
+            "recipe_id": 1
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when the request body contains a valid but non-existent 'recipe_id'", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
+        .expect(404)
+        .send({
+            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+            "recipe_id": 8
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Recipe does not exist.");
+        });
+    });
+});
