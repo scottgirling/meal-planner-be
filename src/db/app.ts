@@ -20,6 +20,7 @@ import { postRecipe } from "../controllers/postRecipe";
 import { postRecipeTag } from "../controllers/postRecipeTag";
 import { postTag } from "../controllers/postTag";
 import { postRecipeIngredients } from "../controllers/postRecipeIngredients";
+import { postIngredient } from "../controllers/postIngredient";
 
 app.use(cors());
 app.use(express.json());
@@ -38,6 +39,7 @@ app.post("/api/recipes", postRecipe);
 app.post("/api/recipe_tags", postRecipeTag);
 app.post("/api/tags", postTag);
 app.post("/api/recipe_ingredients", postRecipeIngredients);
+app.post("/api/ingredients", postIngredient);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
