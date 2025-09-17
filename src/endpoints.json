@@ -582,5 +582,22 @@
                 "unit": "tbsp" 
             }
         ]
+    },
+    "POST /api/ingredients": {
+        "description": "serves the newly created ingredient object",
+        "queries": [],
+        "examplePath": "/api/ingredients",
+        "exampleRequestBody": {
+            "ingredient_name": "Mushrooms",
+            "ingredient_slug": "mushrooms",
+            "ingredient_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123"
+        },
+        "exampleResponse": {
+            "ingredient_name": "Mushrooms",
+            "ingredient_slug": "mushrooms",
+            "ingredient_created_at": "2025-09-17T12:00:00Z",
+            "ingredient_last_updated_at": "2025-09-17T12:00:00Z",
+            "ingredient_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123"
+        }
     }
 }
