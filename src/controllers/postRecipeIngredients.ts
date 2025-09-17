@@ -28,7 +28,7 @@ export const postRecipeIngredients = (request: Request, response: Response, next
 
     createRecipeIngredients(recipe_id, ingredient_ids, quantity, unit)
     .then((recipe_ingredients: RecipeIngredient[]) => {
-        return response.status(201).send({ recipe_ingredients});
+        return response.status(201).send({ recipe_ingredients });
     })
     .catch((error: Error) => {
         next(error);
