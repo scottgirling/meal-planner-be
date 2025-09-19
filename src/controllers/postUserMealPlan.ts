@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
+import { PoolClient } from "pg";
 import db from "../db/connection.js";
 import { createUserMealPlan } from "../models/createUserMealPlan";
 import { createMealPlanRecipe } from "../models/createMealPlanRecipe";
-import { MealPlan, MealPlanRecipe } from "../types";
 import { checkUserExists } from "../utils/checkUserExists";
+import { checkRecipeExists } from "../utils/checkRecipeExists.js";
 import { formatDate } from "../utils/formatDate";
-import { PoolClient } from "pg";
 
 export const postUserMealPlan = async (request: Request, response: Response, next: NextFunction) => {
     const { user_id } = request.params;
@@ -14,11 +14,32 @@ export const postUserMealPlan = async (request: Request, response: Response, nex
         scheduled_dates
     } = request.body;
 
+    if (
+        recipe_ids === undefined ||
+        scheduled_dates === undefined
+    ) {
+        return Promise.reject({ status: 400, msg: "Invalid request - missing field(s)." });
+    }
+
+    if (
+        !Array.isArray(recipe_ids) ||
+        !Array.isArray(scheduled_dates)
+    ) {
+        return Promise.reject({ status: 400, msg: "Invalid data type." });
+    }
+
     let newMealPlanId: (number | undefined) = 0;
 
     checkUserExists(user_id)
     .catch((error) => {
         next(error);
+    });
+
+    recipe_ids.forEach((recipe_id) => {
+        checkRecipeExists(recipe_id)
+        .catch((error) => {
+            next(error);
+        });
     });
 
     let client: PoolClient | undefined;
