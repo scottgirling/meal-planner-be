@@ -612,5 +612,28 @@
             "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
             "recipe_id": 3
         }
+    },
+    "POST /api/users/:user_id/meal_plans": {
+        "description": "serves an array of the newly created meal-plan-recipe objects",
+        "queries": [],
+        "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/meal_plans",
+        "exampleRequestBody": {
+            "recipe_ids": [1, 4],
+            "scheduled_dates": ["2025-10-17", "2025-10-18"]
+        },
+        "exampleResponse": [
+            {
+                "meal_plan_recipe_id": 5,
+                "meal_plan_id": 3,
+                "recipe_id": 1,
+                "scheduled_date": "2025-10-17"
+            },
+            {
+                "meal_plan_recipe_id": 6,
+                "meal_plan_id": 3,
+                "recipe_id": 4,
+                "scheduled_date": "2025-10-18"
+            }
+        ]
     }
 }
