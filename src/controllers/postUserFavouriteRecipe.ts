@@ -5,15 +5,10 @@ import { checkUserExists } from "../utils/checkUserExists";
 import { checkRecipeExists } from "../utils/checkRecipeExists";
 
 export const postUserFavouriteRecipe = (request: Request, response: Response, next: NextFunction) => {
-    const {
-        user_id,
-        recipe_id
-    } = request.body;
+    const { user_id } = request.params;
+    const { recipe_id } = request.body;
 
-    if (
-        user_id === undefined ||
-        recipe_id === undefined
-    ) {
+    if (recipe_id === undefined) {
         return Promise.reject({ status: 400, msg: 'Invalid request - missing field(s).' });
     }
 

@@ -1317,7 +1317,6 @@ describe("POST /api/users/:user_id/favourite_recipes", () => {
         .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
         .expect(201)
         .send({
-            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
             "recipe_id": 3
         })
         .then((response) => {
@@ -1336,7 +1335,6 @@ describe("POST /api/users/:user_id/favourite_recipes", () => {
         .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
         .expect(409)
         .send({
-            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
             "recipe_id": 4
         })
         .then((response) => {
@@ -1350,9 +1348,7 @@ describe("POST /api/users/:user_id/favourite_recipes", () => {
         return request(app)
         .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
         .expect(400)
-        .send({
-            "recipe_id": 3
-        })
+        .send({})
         .then((response) => {
             const { msg } = response.body as {
                 msg: string
@@ -1365,7 +1361,6 @@ describe("POST /api/users/:user_id/favourite_recipes", () => {
         .post("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/favourite_recipes")
         .expect(404)
         .send({
-            "user_id": "c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2",
             "recipe_id": 1
         })
         .then((response) => {
@@ -1380,7 +1375,6 @@ describe("POST /api/users/:user_id/favourite_recipes", () => {
         .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes")
         .expect(404)
         .send({
-            "user_id": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
             "recipe_id": 8
         })
         .then((response) => {
