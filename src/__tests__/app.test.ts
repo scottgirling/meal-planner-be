@@ -1523,3 +1523,128 @@ describe("POST /api/users/:user_id/meal_plans", () => {
         });
     });
 });
+
+describe("POST /api/users/:user_id/shopping_lists", () => {
+    test("201: each new 'shopping-list-ingredient' entry contains the newly created 'shopping_list_id', as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists")
+        .expect(201)
+        .send({
+            meal_plan_id: 1,
+            recipe_ids: [1, 2]
+        })
+        .then((response) => {
+            const { shopping_list_ingredients } = response.body as {
+                shopping_list_ingredients: ShoppingListIngredient[]
+            }
+            shopping_list_ingredients.forEach((ingredient) => {
+                expect(ingredient.shopping_list_id).toBe(3);
+            });
+        });
+    });
+    test("201: responds with the newly created 'shopping-list-ingredient' entries, as well as an appropriate status code", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists")
+        .expect(201)
+        .send({
+            meal_plan_id: 1,
+            recipe_ids: [1, 2]
+        })
+        .then((response) => {
+            const { shopping_list_ingredients } = response.body as {
+                shopping_list_ingredients: ShoppingListIngredient[]
+            }
+            const expectedOutput = [
+                {
+                    "shopping_list_ingredient_id": 17,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 1,
+                    "quantity": "400",
+                    "unit": "g",
+                    "is_checked_off": false
+                },
+                {
+                    "shopping_list_ingredient_id": 18,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 2,
+                    "quantity": "150",
+                    "unit": "g",
+                    "is_checked_off": false
+                },
+                {
+                    "shopping_list_ingredient_id": 19,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 3,
+                    "quantity": "4",
+                    "unit": "pcs",
+                    "is_checked_off": false
+                },
+                {
+                    "shopping_list_ingredient_id": 20,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 4,
+                    "quantity": "50",
+                    "unit": "g",
+                    "is_checked_off": false
+                },
+                {
+                    "shopping_list_ingredient_id": 21,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 5,
+                    "quantity": "1",
+                    "unit": "tsp",
+                    "is_checked_off": false
+                },
+                {
+                    "shopping_list_ingredient_id": 22,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 6,
+                    "quantity": "0.5",
+                    "unit": "tsp",
+                    "is_checked_off": false
+                },
+                {
+                    "shopping_list_ingredient_id": 23,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 7,
+                    "quantity": "200",
+                    "unit": "g",
+                    "is_checked_off": false
+                },
+                {
+                    "shopping_list_ingredient_id": 24,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 8,
+                    "quantity": "2",
+                    "unit": "tsp",
+                    "is_checked_off": false
+                },
+                { 
+                    "shopping_list_ingredient_id": 25,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 9, 
+                    "quantity": "2", 
+                    "unit": "tbsp", 
+                    "is_checked_off": false
+                },
+                { 
+                    "shopping_list_ingredient_id": 26,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 10, 
+                    "quantity": "300", 
+                    "unit": "ml", 
+                    "is_checked_off": false
+                },
+                { 
+                    "shopping_list_ingredient_id": 27,
+                    "shopping_list_id": 3,
+                    "ingredient_id": 11, 
+                    "quantity": "30", 
+                    "unit": "g", 
+                    "is_checked_off": false
+                }
+            ]
+            expect(shopping_list_ingredients).toEqual(expectedOutput);
+        });
+    });
+});
