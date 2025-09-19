@@ -1,4 +1,4 @@
-import type { ShoppingListIngredient } from "../../../types/shopping-list-ingredient"
+import type { ShoppingListIngredient } from "../../../types/shopping-list-ingredient";
 
 export const testShoppingListIngredients: ShoppingListIngredient[] = [
   {
@@ -57,7 +57,6 @@ export const testShoppingListIngredients: ShoppingListIngredient[] = [
     "unit": "tsp",
     "is_checked_off": false
   },
-
   {
     "shopping_list_id": 2,
     "ingredient_id": 12,
