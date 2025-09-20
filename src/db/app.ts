@@ -24,6 +24,7 @@ import { postIngredient } from "../controllers/postIngredient";
 import { postUserFavouriteRecipe } from "../controllers/postUserFavouriteRecipe";
 import { postUserMealPlan } from "../controllers/postUserMealPlan";
 import { postUserShoppingList } from "../controllers/postUserShoppingList";
+import { deleteRecipe } from "../controllers/deleteRecipe";
 
 app.use(cors());
 app.use(express.json());
@@ -46,6 +47,7 @@ app.post("/api/ingredients", postIngredient);
 app.post("/api/users/:user_id/favourite_recipes", postUserFavouriteRecipe);
 app.post("/api/users/:user_id/meal_plans", postUserMealPlan);
 app.post("/api/users/:user_id/shopping_lists", postUserShoppingList);
+app.delete("/api/recipes/:recipe_id", deleteRecipe);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
