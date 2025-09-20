@@ -734,5 +734,11 @@
                 "is_checked_off": false
             }
         ]
+    },
+    "DELETE /api/recipes/:recipe_id": {
+        "description": "removes the recipe object of the given 'recipe_id' (where the 'is_recipe_public' field is false) and serves only the status code",
+        "queries": [],
+        "examplePath": "/api/recipes/3",
+        "exampleResponse": "none - only a 204 status code"
     }
 }
