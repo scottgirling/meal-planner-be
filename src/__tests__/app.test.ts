@@ -1647,4 +1647,93 @@ describe("POST /api/users/:user_id/shopping_lists", () => {
             expect(shopping_list_ingredients).toEqual(expectedOutput);
         });
     });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
+        return request(app)
+        .post("/api/users/scottgirling/shopping_lists")
+        .expect(400)
+        .send({
+            meal_plan_id: 1,
+            recipe_ids: [1, 2]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .post("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/shopping_lists")
+        .expect(404)
+        .send({
+            meal_plan_id: 1,
+            recipe_ids: [1, 2]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists")
+        .expect(400)
+        .send({
+            meal_plan_id: 1
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists")
+        .expect(400)
+        .send({
+            meal_plan_id: 1,
+            recipe_ids: 1
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when the 'recipe_ids' field is an empty array", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists")
+        .expect(400)
+        .send({
+            meal_plan_id: 1,
+            recipe_ids: []
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Incomplete data.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when the request body contains a valid but non-existent 'recipe_id'", () => {
+        return request(app)
+        .post("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists")
+        .expect(404)
+        .send({
+            meal_plan_id: 1,
+            recipe_ids: [1, 12]
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Recipe does not exist.");
+        });
+    });
 });
