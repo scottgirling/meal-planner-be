@@ -1,4 +1,5 @@
 import 'source-map-support/register';
+import db from "../db/connection.js";
 import { app } from "../db/app.js";
 import connection from "../db/connection.js";
 import { seed } from "../db/seeds/seed.js";
@@ -22,7 +23,17 @@ import type {
 } from "../types/index.js";
 
 beforeEach(async () => {
+    await db.query(`
+        TRUNCATE recipes, recipe_tags, recipe_ingredients, meal_plan_recipes, user_favourite_recipes
+        RESTART IDENTITY CASCADE;
+    `);
     await seed(testData);
+});
+
+let num = 1;
+afterEach(() => {
+    console.log(`Test number ${num} complete.`);
+    num++;
 });
 
 afterAll(async () => {
@@ -1729,6 +1740,47 @@ describe("POST /api/users/:user_id/shopping_lists", () => {
             meal_plan_id: 1,
             recipe_ids: [1, 12]
         })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Recipe does not exist.");
+        });
+    });
+});
+
+describe("DELETE /api/recipes/:recipe_id", () => {
+    test("204: removes the recipe object of the given 'recipe_id' when the 'is_recipe_public' field is 'false', as well as responding with an appropriate status code", () => {
+        return request(app)
+        .delete("/api/recipes/3")
+        .expect(204);
+    });
+    test("400: responds with an appropriate status code and error message when the 'is_recipe_public' field is 'true' for the given recipe", () => {
+        return request(app)
+        .delete("/api/recipes/1")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - public recipes cannot be removed.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
+        return request(app)
+        .delete("/api/recipes/one")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
+        return request(app)
+        .delete("/api/recipes/34")
+        .expect(404)
         .then((response) => {
             const { msg } = response.body as {
                 msg: string
