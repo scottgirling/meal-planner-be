@@ -103,7 +103,7 @@ export const seed = (
             ingredient_created_at TIMESTAMP DEFAULT NOW(),
             ingredient_last_updated_at TIMESTAMP DEFAULT NOW(),
             ingredient_created_by uuid REFERENCES users(user_id) NOT NULL
-        )`)
+        )`);
     })
     .then(() => {
             return db.query(`CREATE TABLE recipes (
@@ -121,7 +121,7 @@ export const seed = (
             recipe_img_url VARCHAR,
             difficulty INT NOT NULL,
             is_recipe_public BOOLEAN DEFAULT TRUE
-        )`)
+        )`);
     })
     .then(() => {
         return db.query(`CREATE TABLE meal_plans (
@@ -130,7 +130,7 @@ export const seed = (
             meal_plan_created_at TIMESTAMP DEFAULT NOW(),
             meal_plan_last_updated_at TIMESTAMP DEFAULT NOW(),
             FOREIGN KEY (meal_plan_created_by) REFERENCES users(user_id) ON DELETE CASCADE
-        )`)
+        )`);
     })
     .then(() => {
         const shoppingListsTablePromise = db.query(`CREATE TABLE shopping_lists (
@@ -150,7 +150,7 @@ export const seed = (
             FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
         )`);
 
-        return Promise.all([shoppingListsTablePromise, recipeTagsTablePromise])
+        return Promise.all([shoppingListsTablePromise, recipeTagsTablePromise]);
     })
     .then(() => {
         return db.query(`CREATE TABLE recipe_ingredients (
@@ -161,7 +161,7 @@ export const seed = (
             unit VARCHAR NOT NULL,
             FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE,
             FOREIGN KEY (ingredient_id) REFERENCES ingredients(ingredient_id) ON DELETE CASCADE
-        )`)
+        )`);
     })
     .then(() => {
         return db.query(`CREATE TABLE user_favourite_recipes (
@@ -175,10 +175,11 @@ export const seed = (
     .then(() => {
         const mealPlanRecipesTablePromise = db.query(`CREATE TABLE meal_plan_recipes (
             meal_plan_recipe_id SERIAL PRIMARY KEY,
-            meal_plan_id INT  NOT NULL,
-            recipe_id INT REFERENCES recipes(recipe_id) NOT NULL,
+            meal_plan_id INT NOT NULL,
+            recipe_id INT NOT NULL,
             scheduled_date DATE,
-            FOREIGN KEY (meal_plan_id) REFERENCES meal_plans(meal_plan_id) ON DELETE CASCADE
+            FOREIGN KEY (meal_plan_id) REFERENCES meal_plans(meal_plan_id) ON DELETE CASCADE,
+            FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
         )`);
 
         const shoppingListIngredientsTablePromise = db.query(`CREATE TABLE shopping_list_ingredients (
