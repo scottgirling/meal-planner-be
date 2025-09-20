@@ -3,24 +3,17 @@ import { checkRecipeExists } from "../utils/checkRecipeExists";
 import { checkRecipeIsPublic } from "../utils/checkRecipeIsPublic";
 import { removeRecipeById } from "../models/removeRecipeById";
 
-export const deleteRecipe = (request: Request, response: Response, next: NextFunction) => {
+export const deleteRecipe = async (request: Request, response: Response, next: NextFunction) => {
     const { recipe_id } = request.params;
+    
+    try {
+        await checkRecipeExists(recipe_id);
+        await checkRecipeIsPublic(recipe_id);
+        await removeRecipeById(recipe_id);
 
-    checkRecipeExists(recipe_id)
-    .catch((error) => {
-        next(error);
-    });
-
-    checkRecipeIsPublic(recipe_id)
-    .catch((error) => {
-        next(error);
-    });
-
-    removeRecipeById(recipe_id)
-    .then(() => {
         return response.status(204).send();
-    })
-    .catch((error) => {
+
+    } catch (error) {
         next(error);
-    });
+    }
 }
