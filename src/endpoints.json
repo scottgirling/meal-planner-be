@@ -752,5 +752,11 @@
         "queries": [],
         "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes/1",
         "exampleResponse": "none - only a 204 status code"
+    },
+    "DELETE /api/users/:user_id/shopping_lists/:shopping_list_id": {
+        "description": "removes the shopping-list object and all associated shopping-list-ingredient objects and serves only the status code", 
+        "queries": [],
+        "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/shopping_lists/1",
+        "exampleResponse": "none - only a 204 status code"
     }
 }
