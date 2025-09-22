@@ -102,7 +102,8 @@ export const seed = (
             ingredient_slug VARCHAR NOT NULL,
             ingredient_created_at TIMESTAMP DEFAULT NOW(),
             ingredient_last_updated_at TIMESTAMP DEFAULT NOW(),
-            ingredient_created_by uuid REFERENCES users(user_id) NOT NULL
+            ingredient_created_by uuid,
+            FOREIGN KEY (ingredient_created_by) REFERENCES users(user_id) ON DELETE SET NULL
         )`);
     })
     .then(() => {
@@ -115,12 +116,13 @@ export const seed = (
             cook_time INT NOT NULL,
             votes INT DEFAULT 0,
             servings INT NOT NULL,
-            recipe_created_by uuid REFERENCES users(user_id) NOT NULL,
+            recipe_created_by uuid,
             recipe_created_at TIMESTAMP DEFAULT NOW(),
             recipe_last_updated_at TIMESTAMP DEFAULT NOW(),
             recipe_img_url VARCHAR,
             difficulty INT NOT NULL,
-            is_recipe_public BOOLEAN DEFAULT TRUE
+            is_recipe_public BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (recipe_created_by) REFERENCES users(user_id) ON DELETE SET NULL
         )`);
     })
     .then(() => {

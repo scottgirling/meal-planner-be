@@ -740,5 +740,11 @@
         "queries": [],
         "examplePath": "/api/recipes/3",
         "exampleResponse": "none - only a 204 status code"
+    },
+    "DELETE /api/users/:user_id": {
+        "description": "removes the user object of the given 'user_id' and serves only the status code",
+        "queries": [],
+        "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+        "exampleResponse": "none - only a 204 status code"
     }
 }
