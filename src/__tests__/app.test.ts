@@ -1819,3 +1819,60 @@ describe("DELETE /api/users/:user_id", () => {
         });
     });
 });
+
+describe("DELETE /api/users/:user_id/favourite_recipes/:recipe_id", () => {
+    test("204: removes the user-favourite-recipe object of the matching 'user_id' and 'recipe_id', as well as an appropriate status code", () => {
+        return request(app)
+        .delete("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes/1")
+        .expect(204);
+    });
+    test("204: responds with an appropriate status code when passed an existing 'recipe_id' but one that hasn't been 'favourited' by the given user", () => {
+        return request(app)
+        .delete("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes/3")
+        .expect(204);
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
+        return request(app)
+        .delete("/api/users/scottgirling/favourite_recipes/1")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .delete("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2/favourite_recipes/1")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
+        return request(app)
+        .delete("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes/one")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
+        return request(app)
+        .delete("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/favourite_recipes/14")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Recipe does not exist.");
+        });
+    });
+});
