@@ -26,6 +26,7 @@ import { postUserMealPlan } from "../controllers/postUserMealPlan";
 import { postUserShoppingList } from "../controllers/postUserShoppingList";
 import { deleteRecipe } from "../controllers/deleteRecipe";
 import { deleteUser } from "../controllers/deleteUser";
+import { deleteUserFavouriteRecipe } from "../controllers/deleteUserFavouriteRecipe";
 
 app.use(cors());
 app.use(express.json());
@@ -50,6 +51,7 @@ app.post("/api/users/:user_id/meal_plans", postUserMealPlan);
 app.post("/api/users/:user_id/shopping_lists", postUserShoppingList);
 app.delete("/api/recipes/:recipe_id", deleteRecipe);
 app.delete("/api/users/:user_id", deleteUser);
+app.delete("/api/users/:user_id/favourite_recipes/:recipe_id", deleteUserFavouriteRecipe);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
