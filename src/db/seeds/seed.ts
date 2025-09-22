@@ -140,8 +140,9 @@ export const seed = (
             shopping_list_created_by uuid NOT NULL, 
             shopping_list_created_at TIMESTAMP DEFAULT NOW(),
             shopping_list_last_updated_at TIMESTAMP DEFAULT NOW(),
-            meal_plan_id INT REFERENCES meal_plans(meal_plan_id) NOT NULL,
-            FOREIGN KEY (shopping_list_created_by) REFERENCES users(user_id) ON DELETE CASCADE
+            meal_plan_id INT NOT NULL,
+            FOREIGN KEY (shopping_list_created_by) REFERENCES users(user_id) ON DELETE CASCADE,
+            FOREIGN KEY (meal_plan_id) REFERENCES meal_plans(meal_plan_id) ON DELETE CASCADE
         )`);
 
         const recipeTagsTablePromise = db.query(`CREATE TABLE recipe_tags (
