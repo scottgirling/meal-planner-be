@@ -1789,3 +1789,33 @@ describe("DELETE /api/recipes/:recipe_id", () => {
         });
     });
 });
+
+describe("DELETE /api/users/:user_id", () => {
+    test("204: removes the user object of the given 'user_id' and responds with an appropriate status code", () => {
+        return request(app)
+        .delete("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123")
+        .expect(204);
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
+        return request(app)
+        .delete("/api/users/scottgirling")
+        .expect(400)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .delete("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2")
+        .expect(404)
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
+});
