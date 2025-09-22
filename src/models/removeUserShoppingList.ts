@@ -1,5 +1,4 @@
 import db from "../db/connection.js";
-import { ShoppingListIngredient } from "../types/shopping-list-ingredient.js";
 import { ShoppingList } from "../types/shopping-list.js";
 
 export const removeUserShoppingList = (user_id: string, shopping_list_id: string) => {
