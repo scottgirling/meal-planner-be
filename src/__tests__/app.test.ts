@@ -1990,3 +1990,55 @@ describe("DELETE /api/users/:user_id/meal_plans/:meal_plan_id", () => {
         });
     });
 });
+
+describe("PATCH /api/recipes/:recipe_id", () => {
+    test("200: responds with the updated recipe object when a single column is updated and the recipe's 'is_recipe_public' column is 'false', as well as an appropriate status code", () => {
+        return request(app)
+        .patch("/api/recipes/3")
+        .expect(200)
+        .send({
+            "cook_time": 35
+        })
+        .then((response) => {
+            const { recipe } = response.body as {
+                recipe: Recipe
+            }
+            expect(recipe.cook_time).toBe(35);
+        });
+    });
+    test("200: responds with the updated recipe object when multiple columns are updated and the recipe's 'is_recipe_public' column is 'false', as well as an appropriate status code", () => {
+        return request(app)
+        .patch("/api/recipes/3")
+        .expect(200)
+        .send({
+            "recipe_name": "Thai Red Curry",
+            "instructions": "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.",
+            "prep_time": 15,
+            "cook_time": 20,
+            "servings": 3,
+            "recipe_img_url": "https://example.com/images/thai-red-curry.jpg",
+            "difficulty": 4,
+            "is_recipe_public": true
+        })
+        .then((response) => {
+            const { recipe } = response.body as {
+                recipe: Recipe
+            }
+            expect(recipe.recipe_id).toBe(3);
+            expect(recipe).toHaveProperty("recipe_name", "Thai Red Curry");
+            expect(recipe).toHaveProperty("recipe_slug", "thai-red-curry");
+            expect(recipe).toHaveProperty("instructions", "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.");
+            expect(recipe).toHaveProperty("prep_time", 15);
+            expect(recipe).toHaveProperty("cook_time", 20);
+            expect(recipe).toHaveProperty("votes", 2);
+            expect(recipe).toHaveProperty("servings", 3);
+            expect(recipe).toHaveProperty("recipe_created_by", "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123");
+            expect(recipe).toHaveProperty("recipe_created_at", "2025-06-20T16:40:00.000Z");
+            expect(recipe).toHaveProperty("recipe_last_updated_at", expect.any(String));
+            expect(recipe).toHaveProperty("recipe_img_url", "https://example.com/images/thai-red-curry.jpg");
+            expect(recipe).toHaveProperty("difficulty", 4);
+            expect(recipe).toHaveProperty("is_recipe_public", true);
+            expect(Object.entries(recipe).length).toBe(14);
+        });
+    });
+});
