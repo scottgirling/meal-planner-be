@@ -1,7 +1,8 @@
+import { DBClient } from "../types/db-client.js";
 import db from "../db/connection.js";
 import { Recipe } from "../types/recipe.js";
 
-export const updateRecipeById = (recipe_id: string, recipe_name: string, instructions: string, prep_time: number, cook_time: number, servings: number, recipe_img_url: string, difficulty: number, is_recipe_public: boolean) => {
+export const updateRecipeById = (recipe_id: string, recipe_name: string, instructions: string, prep_time: number, cook_time: number, servings: number, recipe_img_url: string, difficulty: number, is_recipe_public: boolean, client: DBClient = db, ) => {
 
     let queryValues = [];
 
@@ -53,7 +54,7 @@ export const updateRecipeById = (recipe_id: string, recipe_name: string, instruc
     queryValues.push(recipe_id);
     sqlQuery += ` WHERE is_recipe_public = false AND recipe_id = $${queryValues.length} RETURNING *`;
 
-    return db.query(sqlQuery, queryValues)
+    return client.query(sqlQuery, queryValues)
     .then(({ rows } : { rows: Recipe[] }) => {
         return rows[0];
     });
