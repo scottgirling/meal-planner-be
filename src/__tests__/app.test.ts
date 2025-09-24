@@ -1755,15 +1755,15 @@ describe("DELETE /api/recipes/:recipe_id", () => {
         .delete("/api/recipes/3")
         .expect(204);
     });
-    test("400: responds with an appropriate status code and error message when the 'is_recipe_public' field is 'true' for the given recipe", () => {
+    test("403: responds with an appropriate status code and error message when the 'is_recipe_public' field is 'true' for the given recipe", () => {
         return request(app)
         .delete("/api/recipes/1")
-        .expect(400)
+        .expect(403)
         .then((response) => {
             const { msg } = response.body as {
                 msg: string
             }
-            expect(msg).toBe("Invalid request - public recipes cannot be removed.");
+            expect(msg).toBe("Forbidden request - unable to amend/remove public recipes.");
         });
     });
     test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
@@ -1992,53 +1992,185 @@ describe("DELETE /api/users/:user_id/meal_plans/:meal_plan_id", () => {
 });
 
 describe("PATCH /api/recipes/:recipe_id", () => {
-    test("200: responds with the updated recipe object when a single column is updated and the recipe's 'is_recipe_public' column is 'false', as well as an appropriate status code", () => {
-        return request(app)
-        .patch("/api/recipes/3")
-        .expect(200)
-        .send({
-            "cook_time": 35
-        })
-        .then((response) => {
-            const { recipe } = response.body as {
-                recipe: Recipe
-            }
-            expect(recipe.cook_time).toBe(35);
+    describe("updateRecipeById", () => {
+        test("200: responds with the updated recipe object when a single column is updated and the recipe's 'is_recipe_public' column is 'false', as well as an appropriate status code", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(200)
+            .send({
+                "cook_time": 35
+            })
+            .then((response) => {
+                const { updatedRecipe } = response.body as {
+                    updatedRecipe: Recipe
+                }
+                expect(updatedRecipe.cook_time).toBe(35);
+            });
+        });
+        test("200: responds with the updated recipe object when multiple columns are updated and the recipe's 'is_recipe_public' column is 'false', as well as an appropriate status code", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(200)
+            .send({
+                "recipe_name": "Thai Red Curry",
+                "instructions": "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.",
+                "prep_time": 15,
+                "cook_time": 20,
+                "servings": 3,
+                "recipe_img_url": "https://example.com/images/thai-red-curry.jpg",
+                "difficulty": 4,
+                "is_recipe_public": true
+            })
+            .then((response) => {
+                const { updatedRecipe } = response.body as {
+                    updatedRecipe: Recipe
+                }
+                expect(updatedRecipe.recipe_id).toBe(3);
+                expect(updatedRecipe).toHaveProperty("recipe_name", "Thai Red Curry");
+                expect(updatedRecipe).toHaveProperty("recipe_slug", "thai-red-curry");
+                expect(updatedRecipe).toHaveProperty("instructions", "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.");
+                expect(updatedRecipe).toHaveProperty("prep_time", 15);
+                expect(updatedRecipe).toHaveProperty("cook_time", 20);
+                expect(updatedRecipe).toHaveProperty("votes", 2);
+                expect(updatedRecipe).toHaveProperty("servings", 3);
+                expect(updatedRecipe).toHaveProperty("recipe_created_by", "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123");
+                expect(updatedRecipe).toHaveProperty("recipe_created_at", "2025-06-20T16:40:00.000Z");
+                expect(updatedRecipe).toHaveProperty("recipe_last_updated_at", expect.any(String));
+                expect(updatedRecipe).toHaveProperty("recipe_img_url", "https://example.com/images/thai-red-curry.jpg");
+                expect(updatedRecipe).toHaveProperty("difficulty", 4);
+                expect(updatedRecipe).toHaveProperty("is_recipe_public", true);
+                expect(Object.entries(updatedRecipe).length).toBe(14);
+            });
+        });
+        test("403: responds with an appropriate status code and error message when the user tries to update a recipe with an 'is_recipe_public' column that is 'true' (public recipes cannot be updated)", () => {
+            return request(app)
+            .patch("/api/recipes/1")
+            .expect(403)
+            .send({
+                "cook_time": 30
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Forbidden request - unable to amend/remove public recipes.");
+            });
+        });
+        test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
+            return request(app)
+            .patch("/api/recipes/three")
+            .expect(400)
+            .send({
+                "cook_time": 45
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid data type.");
+            });
+        });
+        test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
+            return request(app)
+            .patch("/api/recipes/8")
+            .expect(404)
+            .send({
+                "cook_time": 60
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Recipe does not exist.");
+            });
+        });
+        test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(400)
+            .send({})
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid request - missing field(s).");
+            });
+        });
+        test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(400)
+            .send({
+                "cook_time": "30 minutes"
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid data type.");
+            });
         });
     });
-    test("200: responds with the updated recipe object when multiple columns are updated and the recipe's 'is_recipe_public' column is 'false', as well as an appropriate status code", () => {
-        return request(app)
-        .patch("/api/recipes/3")
-        .expect(200)
-        .send({
-            "recipe_name": "Thai Red Curry",
-            "instructions": "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.",
-            "prep_time": 15,
-            "cook_time": 20,
-            "servings": 3,
-            "recipe_img_url": "https://example.com/images/thai-red-curry.jpg",
-            "difficulty": 4,
-            "is_recipe_public": true
-        })
-        .then((response) => {
-            const { recipe } = response.body as {
-                recipe: Recipe
-            }
-            expect(recipe.recipe_id).toBe(3);
-            expect(recipe).toHaveProperty("recipe_name", "Thai Red Curry");
-            expect(recipe).toHaveProperty("recipe_slug", "thai-red-curry");
-            expect(recipe).toHaveProperty("instructions", "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.");
-            expect(recipe).toHaveProperty("prep_time", 15);
-            expect(recipe).toHaveProperty("cook_time", 20);
-            expect(recipe).toHaveProperty("votes", 2);
-            expect(recipe).toHaveProperty("servings", 3);
-            expect(recipe).toHaveProperty("recipe_created_by", "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123");
-            expect(recipe).toHaveProperty("recipe_created_at", "2025-06-20T16:40:00.000Z");
-            expect(recipe).toHaveProperty("recipe_last_updated_at", expect.any(String));
-            expect(recipe).toHaveProperty("recipe_img_url", "https://example.com/images/thai-red-curry.jpg");
-            expect(recipe).toHaveProperty("difficulty", 4);
-            expect(recipe).toHaveProperty("is_recipe_public", true);
-            expect(Object.entries(recipe).length).toBe(14);
+    describe("removeRecipeIngredient", () => {
+        test("200: removes the recipe-ingredient objects of the given 'ingredient_id's' as well as an appropriate status code", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(200)
+            .send({
+                "ingredientsToRemove": [15, 18],
+                "ingredientsToAdd": [],
+                "quantitiesToAdd": [],
+                "unitsToAdd": []
+            })
+            .then((response) => {
+                const { removedIngredients } = response.body as {
+                    removedIngredients: RecipeIngredient[]
+                }
+                const expectedOutput = [
+                    { 
+                        "recipe_ingredient_id": 15,
+                        "recipe_id": 3, 
+                        "ingredient_id": 15, 
+                        "quantity": "300", 
+                        "unit": "g" 
+                    },
+                    { 
+                        "recipe_ingredient_id": 18,
+                        "recipe_id": 3, 
+                        "ingredient_id": 18, 
+                        "quantity": "10", 
+                        "unit": "leaves" 
+                    }
+                ]
+                expect(removedIngredients).toEqual(expectedOutput);
+            });
+        });
+    });
+    describe("createRecipeIngredients", () => {
+        test("200: responds with the newly created 'recipe-ingredient' entries, as well as an appropriate status code", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(200)
+            .send({
+                "ingredientsToAdd": [18],
+                "quantitiesToAdd": [4],
+                "unitsToAdd": ["slices"]
+            })
+            .then((response) => {
+                const { addedIngredients } = response.body as {
+                    addedIngredients: RecipeIngredient[]
+                }
+                const expectedOutput = [
+                    { 
+                        "recipe_ingredient_id": 26, 
+                        "recipe_id": 3, 
+                        "ingredient_id": 18, 
+                        "quantity": "4", 
+                        "unit": "slices"
+                    }
+                ]
+                expect(addedIngredients).toEqual(expectedOutput);
+            });
         });
     });
 });
