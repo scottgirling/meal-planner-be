@@ -1,7 +1,12 @@
+import { DBClient } from "../types/db-client.js";
 import db from "../db/connection.js";
 import { RecipeIngredient } from "../types/recipe-ingredient.js";
 
-export const createRecipeIngredients = (recipe_id: number, ingredient_ids: number[], quantity: number[], unit: string[]) => {
+export const createRecipeIngredients = (recipe_id: string, ingredient_ids: number[], quantity: number[], unit: string[], client: DBClient = db) => {
+
+    if (!ingredient_ids || !ingredient_ids.length) {
+        return;
+    }
 
     const positionalPlaceholders: string[] = [];
     const queryParams: (string | number)[] = [];
@@ -12,7 +17,7 @@ export const createRecipeIngredients = (recipe_id: number, ingredient_ids: numbe
         queryParams.push(recipe_id, ingredient_id, quantity[index], unit[index]);
     });
 
-    return db.query(`INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES ${positionalPlaceholders.join(", ")} RETURNING *`, queryParams)
+    return client.query(`INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES ${positionalPlaceholders.join(", ")} RETURNING *`, queryParams)
     .then(({ rows } : { rows: RecipeIngredient[] }) => {
         return rows;
     });
