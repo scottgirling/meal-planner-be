@@ -30,6 +30,7 @@ import { deleteUserFavouriteRecipe } from "../controllers/deleteUserFavouriteRec
 import { deleteUserShoppingList } from "../controllers/deleteUserShoppingList";
 import { deleteUserMealPlan } from "../controllers/deleteUserMealPlan";
 import { patchRecipe } from "../controllers/patchRecipe";
+import { patchUser } from "../controllers/patchUser";
 
 app.use(cors());
 app.use(express.json());
@@ -58,6 +59,7 @@ app.delete("/api/users/:user_id/favourite_recipes/:recipe_id", deleteUserFavouri
 app.delete("/api/users/:user_id/shopping_lists/:shopping_list_id", deleteUserShoppingList);
 app.delete("/api/users/:user_id/meal_plans/:meal_plan_id", deleteUserMealPlan);
 app.patch("/api/recipes/:recipe_id", patchRecipe);
+app.patch("/api/users/:user_id", patchUser);
 
 app.use((error: CustomError, request: Request, response: Response, next: NextFunction) => {
     if (error.status && error.msg) {
