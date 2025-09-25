@@ -25,7 +25,10 @@ export const patchRecipe = async (request: Request, response: Response, next: Ne
     } = request.body;
 
     if (!Object.entries(request.body).length) {
-        return Promise.reject({ status: 400, msg: "Invalid request - missing field(s)." });
+        throw {
+            status: 400,
+            msg: "Invalid request - missing field(s)."
+        }
     }
 
     let client: PoolClient | undefined;

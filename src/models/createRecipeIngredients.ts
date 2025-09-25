@@ -2,7 +2,7 @@ import { DBClient } from "../types/db-client.js";
 import db from "../db/connection.js";
 import { RecipeIngredient } from "../types/recipe-ingredient.js";
 
-export const createRecipeIngredients = (recipe_id: string, ingredient_ids: number[], quantity: number[], unit: string[], client: DBClient = db) => {
+export const createRecipeIngredients = async (recipe_id: string, ingredient_ids: number[], quantity: number[], unit: string[], client: DBClient = db) => {
 
     if (!ingredient_ids || !ingredient_ids.length) {
         return;
@@ -17,8 +17,12 @@ export const createRecipeIngredients = (recipe_id: string, ingredient_ids: numbe
         queryParams.push(recipe_id, ingredient_id, quantity[index], unit[index]);
     });
 
-    return client.query(`INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES ${positionalPlaceholders.join(", ")} RETURNING *`, queryParams)
-    .then(({ rows } : { rows: RecipeIngredient[] }) => {
+    try {
+        const result: { rows: RecipeIngredient[] } = await client.query(`INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES ${positionalPlaceholders.join(", ")} RETURNING *`, queryParams);
+        const { rows } = result;
+
         return rows;
-    });
+    } catch (error) {
+        throw error;
+    }
 }

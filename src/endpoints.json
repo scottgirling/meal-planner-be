@@ -764,5 +764,73 @@
         "queries": [],
         "examplePath": "/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123/meal_plans/1",
         "exampleResponse": "none - only a 204 status code"
+    },
+    "PATCH /api/recipes/:recipe_id": {
+        "description": "serves an updated recipe object, confirmation of the removed ingredients and the newly added recipe ingredients",
+        "queries": [],
+        "examplePath": "/api/recipes/3",
+        "exampleRequestBody": {
+            "recipe_name": "Thai Red Curry",
+            "instructions": "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.",
+            "prep_time": 15,
+            "cook_time": 20,
+            "servings": 3,
+            "recipe_img_url": "https://example.com/images/thai-red-curry.jpg",
+            "difficulty": 4,
+            "is_recipe_public": true,
+            "ingredientsToRemove": [15, 18],
+            "ingredientsToAdd": [21, 23],
+            "quantitiesToAdd": [4, 2],
+            "unitsToAdd": ["slices", "tbsp"]
+        },
+        "exampleResponse": {
+            "updatedRecipe": {
+                "recipe_name": "Thai Red Curry",
+                "recipe_slug": "thai-red-curry",
+                "instructions": "Pre-heat oven at 200c. Cook curry paste. Add coconut milk. Add vegetables and chicken. Simmer and cook naan bread for three minutes. Serve with rice.",
+                "prep_time": 15,
+                "cook_time": 20,
+                "votes": 2,
+                "servings": 3,
+                "recipe_created_by": "e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123",
+                "recipe_created_at": "2025-06-20T16:40:00.000Z",
+                "recipe_last_updated_at": "2025-09-25T20:10:00.000Z",
+                "recipe_img_url": "https://example.com/images/thai-red-curry.jpg",
+                "difficulty": 4,
+                "is_recipe_public": true
+            },
+            "removedIngredients": [
+                { 
+                    "recipe_ingredient_id": 15,
+                    "recipe_id": 3, 
+                    "ingredient_id": 15, 
+                    "quantity": "300", 
+                    "unit": "g" 
+                },
+                { 
+                    "recipe_ingredient_id": 18,
+                    "recipe_id": 3, 
+                    "ingredient_id": 18, 
+                    "quantity": "10", 
+                    "unit": "leaves" 
+                }
+            ],
+            "addedIngredients": [
+                { 
+                    "recipe_ingredient_id": 26, 
+                    "recipe_id": 3, 
+                    "ingredient_id": 21, 
+                    "quantity": "4", 
+                    "unit": "slices"
+                },
+                { 
+                    "recipe_ingredient_id": 27, 
+                    "recipe_id": 3, 
+                    "ingredient_id": 23, 
+                    "quantity": "2", 
+                    "unit": "tbsp"
+                }
+            ]
+        }
     }
 }
