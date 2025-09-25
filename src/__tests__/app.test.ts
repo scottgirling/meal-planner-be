@@ -2056,63 +2056,9 @@ describe("PATCH /api/recipes/:recipe_id", () => {
                 expect(msg).toBe("Forbidden request - unable to amend/remove public recipes.");
             });
         });
-        test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
-            return request(app)
-            .patch("/api/recipes/three")
-            .expect(400)
-            .send({
-                "cook_time": 45
-            })
-            .then((response) => {
-                const { msg } = response.body as {
-                    msg: string
-                }
-                expect(msg).toBe("Invalid data type.");
-            });
-        });
-        test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
-            return request(app)
-            .patch("/api/recipes/8")
-            .expect(404)
-            .send({
-                "cook_time": 60
-            })
-            .then((response) => {
-                const { msg } = response.body as {
-                    msg: string
-                }
-                expect(msg).toBe("Recipe does not exist.");
-            });
-        });
-        test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
-            return request(app)
-            .patch("/api/recipes/3")
-            .expect(400)
-            .send({})
-            .then((response) => {
-                const { msg } = response.body as {
-                    msg: string
-                }
-                expect(msg).toBe("Invalid request - missing field(s).");
-            });
-        });
-        test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
-            return request(app)
-            .patch("/api/recipes/3")
-            .expect(400)
-            .send({
-                "cook_time": "30 minutes"
-            })
-            .then((response) => {
-                const { msg } = response.body as {
-                    msg: string
-                }
-                expect(msg).toBe("Invalid data type.");
-            });
-        });
     });
     describe("removeRecipeIngredient", () => {
-        test("200: removes the recipe-ingredient objects of the given 'ingredient_id's' as well as an appropriate status code", () => {
+        test("200: removes the recipe-ingredient objects of the given 'ingredient_id's, as well as an appropriate status code", () => {
             return request(app)
             .patch("/api/recipes/3")
             .expect(200)
@@ -2145,14 +2091,66 @@ describe("PATCH /api/recipes/:recipe_id", () => {
                 expect(removedIngredients).toEqual(expectedOutput);
             });
         });
+        test("400: responds with an appropriate status code and error message when passed an invalid 'ingredient_id'", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(400)
+            .send({
+                "ingredientsToRemove": ["fifteen"],
+                "ingredientsToAdd": [],
+                "quantitiesToAdd": [],
+                "unitsToAdd": []
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid data type.");
+            });
+        });
+        test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'ingredient_id'", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(404)
+            .send({
+                "ingredientsToRemove": [15, 99],
+                "ingredientsToAdd": [],
+                "quantitiesToAdd": [],
+                "unitsToAdd": []
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("One or more ingredient not found on this recipe.");
+            });
+        });
+        test("404: responds with an appropriate status code and error message when a given 'ingredient_id' is valid (exists) but not associated with the given recipe", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(404)
+            .send({
+                "ingredientsToRemove": [18, 1],
+                "ingredientsToAdd": [],
+                "quantitiesToAdd": [],
+                "unitsToAdd": []
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("One or more ingredient not found on this recipe.");
+            });
+        });
     });
     describe("createRecipeIngredients", () => {
-        test("200: responds with the newly created 'recipe-ingredient' entries, as well as an appropriate status code", () => {
+        test("200: responds with the newly created 'recipe-ingredient' entry when a single ingredient is added, as well as an appropriate status code", () => {
             return request(app)
             .patch("/api/recipes/3")
             .expect(200)
             .send({
-                "ingredientsToAdd": [18],
+                "ingredientsToRemove": [15, 18],
+                "ingredientsToAdd": [21],
                 "quantitiesToAdd": [4],
                 "unitsToAdd": ["slices"]
             })
@@ -2164,12 +2162,135 @@ describe("PATCH /api/recipes/:recipe_id", () => {
                     { 
                         "recipe_ingredient_id": 26, 
                         "recipe_id": 3, 
-                        "ingredient_id": 18, 
+                        "ingredient_id": 21, 
                         "quantity": "4", 
                         "unit": "slices"
                     }
                 ]
                 expect(addedIngredients).toEqual(expectedOutput);
+            });
+        });
+        test("200: responds with the newly created 'recipe-ingredient' entries when multiple new ingredients are added, as well as an appropriate status code", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(200)
+            .send({
+                "ingredientsToRemove": [15, 18],
+                "ingredientsToAdd": [21, 23],
+                "quantitiesToAdd": [4, 2],
+                "unitsToAdd": ["slices", "tbsp"]
+            })
+            .then((response) => {
+                const { addedIngredients } = response.body as {
+                    addedIngredients: RecipeIngredient[]
+                }
+                const expectedOutput = [
+                    { 
+                        "recipe_ingredient_id": 26, 
+                        "recipe_id": 3, 
+                        "ingredient_id": 21, 
+                        "quantity": "4", 
+                        "unit": "slices"
+                    },
+                    { 
+                        "recipe_ingredient_id": 27, 
+                        "recipe_id": 3, 
+                        "ingredient_id": 23, 
+                        "quantity": "2", 
+                        "unit": "tbsp"
+                    }
+                ]
+                expect(addedIngredients).toEqual(expectedOutput);
+            });
+        });
+        test("400: responds with an appropriate status code and error message when passed an invalid 'ingredient_id'", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(400)
+            .send({
+                "ingredientsToRemove": [15, 18],
+                "ingredientsToAdd": ["twenty-one"],
+                "quantitiesToAdd": [4],
+                "unitsToAdd": ["slices"]
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid data type.");
+            });
+        });
+        test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'ingredient_id'", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(404)
+            .send({
+                "ingredientsToRemove": [15, 18],
+                "ingredientsToAdd": [99],
+                "quantitiesToAdd": [4],
+                "unitsToAdd": ["slices"]
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid request - one or more ID not found.");
+            });
+        });
+    });
+    describe("General Error Testing", () => {
+        test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(400)
+            .send({})
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid request - missing field(s).");
+            });
+        });
+        test("400: responds with an appropriate status code and error message when the request body contains the correct fields but one or more field contain an invalid data type", () => {
+            return request(app)
+            .patch("/api/recipes/3")
+            .expect(400)
+            .send({
+                "cook_time": "30 minutes"
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid data type.");
+            });
+        });
+        test("400: responds with an appropriate status code and error message when passed an invalid 'recipe_id'", () => {
+            return request(app)
+            .patch("/api/recipes/three")
+            .expect(400)
+            .send({
+                "cook_time": 45
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Invalid data type.");
+            });
+        });
+        test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'recipe_id'", () => {
+            return request(app)
+            .patch("/api/recipes/8")
+            .expect(404)
+            .send({
+                "cook_time": 60
+            })
+            .then((response) => {
+                const { msg } = response.body as {
+                    msg: string
+                }
+                expect(msg).toBe("Recipe does not exist.");
             });
         });
     });
