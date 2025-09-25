@@ -2295,3 +2295,42 @@ describe("PATCH /api/recipes/:recipe_id", () => {
         });
     });
 });
+
+describe("PATCH /api/users/:user_id", () => {
+    test("200: responds with an updated user object when a single user column is amended, as well as an appropriate status code", () => {
+        return request(app)
+        .patch("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123")
+        .expect(200)
+        .send({
+            "username": "alicejohnson"
+        })
+        .then((response) => {
+            const { user } = response.body as {
+                user: User
+            }
+            expect(user.username).toBe("alicejohnson");
+        });
+    });
+    test("200: responds with an updated user object when multiple user columns are amended, as well as an appropriate status code", () => {
+        return request(app)
+        .patch("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123")
+        .expect(200)
+        .send({
+            "user_name": "Alice Claire Johnson",
+            "username": "alicejohnson",
+            "email": "alicejohnson@example.com",
+            "bio": "Food lover and amateur chef. Always exploring new cuisines. Will eat anything with tofu in it!!",
+            "avatar_url": "https://example.com/avatars/alicejohnson.jpg",
+        })
+        .then((response) => {
+            const { user } = response.body as {
+                user: User
+            }
+            expect(user.user_name).toBe("Alice Claire Johnson");
+            expect(user.username).toBe("alicejohnson");
+            expect(user.email).toBe("alicejohnson@example.com");
+            expect(user.bio).toBe("Food lover and amateur chef. Always exploring new cuisines. Will eat anything with tofu in it!!");
+            expect(user.avatar_url).toBe("https://example.com/avatars/alicejohnson.jpg");
+        });
+    });
+});
