@@ -42,6 +42,6 @@ export const updateUserById = async (user_id: string, user_name: string, usernam
 
         return rows[0];
     } catch (error) {
-
+        throw error;
     }
 }
