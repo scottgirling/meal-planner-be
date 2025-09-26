@@ -2333,4 +2333,44 @@ describe("PATCH /api/users/:user_id", () => {
             expect(user.avatar_url).toBe("https://example.com/avatars/alicejohnson.jpg");
         });
     });
+    test("400: responds with an appropriate status code and error message when the request body does not contain the correct fields", () => {
+        return request(app)
+        .patch("/api/users/e8c0d1b2-7f9b-4b9a-b38a-1f2e6239c123")
+        .expect(400)
+        .send({})
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid request - missing field(s).");
+        });
+    });
+    test("400: responds with an appropriate status code and error message when passed an invalid 'user_id'", () => {
+        return request(app)
+        .patch("/api/users/scottgirling")
+        .expect(400)
+        .send({
+            "username": "scottjamesgirling"
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("Invalid data type.");
+        });
+    });
+    test("404: responds with an appropriate status code and error message when passed a valid but non-existent 'user_id'", () => {
+        return request(app)
+        .patch("/api/users/c5f2b8d6-3c5d-4d9f-b7c9-845b6a34f2c2")
+        .expect(404)
+        .send({
+            "username": "scottgirling"
+        })
+        .then((response) => {
+            const { msg } = response.body as {
+                msg: string
+            }
+            expect(msg).toBe("User does not exist.");
+        });
+    });
 });
