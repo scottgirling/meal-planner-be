@@ -1,8 +1,9 @@
+import { DBClient } from "../types/db-client.js";
 import db from "../db/connection.js";
 import { NotFoundError } from "../types/errors.js";
 import { Recipe } from "../types/recipe.js";
 
-export const findAllRecipes = async (sort_by: string = "votes", order: string = "desc", tag: string | string[] | undefined, limit: number = 20, p: number = 1) => {
+export const findAllRecipes = async (sort_by: string = "votes", order: string = "desc", tag: string | string[] | undefined, limit: number = 20, p: number = 1, client: DBClient = db) => {
 
     const offset = (p - 1) * limit;
     const validSortBy = ["prep_time", "cook_time", "votes", "created_at", "difficulty"];
@@ -33,7 +34,7 @@ export const findAllRecipes = async (sort_by: string = "votes", order: string = 
 
     sqlQuery += ` ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset}`;
 
-    const result = await db.query<Recipe>(sqlQuery, filterQueries);
+    const result = await client.query<Recipe>(sqlQuery, filterQueries);
     const recipes = result.rows;
 
     if (p > 1 && !recipes.length) {
