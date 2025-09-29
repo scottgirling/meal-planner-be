@@ -1,38 +1,56 @@
 import { NextFunction, Request, Response } from "express";
+import { RecipeParams } from "../types/recipe-params";
+import { checkTagExists } from "../utils/checkTagExists";
 import { findAllRecipes } from "../models/findAllRecipes";
 import { Recipe } from "../types";
-import { checkTagExists } from "../utils/checkTagExists";
 
-export const getRecipes = (request: Request, response: Response, next: NextFunction) => {
-    const { sort_by, order, tag, limit, p } = request.query as {
-        sort_by?: string;
-        order?: string;
-        tag?: string;
-        limit?: number;
-        p?: number
-    };
+export const getRecipes = async (
+    request: Request<RecipeParams>, 
+    response: Response, 
+    next: NextFunction
+) => {
+    const { 
+        sort_by, 
+        order, 
+        tag, 
+        limit, 
+        p 
+    } = request.query;
 
-    if (tag) {
-        if (Array.isArray(tag)) {
-            tag.forEach((tag) => {
-                checkTagExists(tag)
-                .catch((error: Error) => {
-                    next(error);
-                });
-            });
-        } else {
-            checkTagExists(tag)
-            .catch((error: Error) => {
-                next(error);
-            });
-        }
+    let parsedLimit: number | undefined;
+    let parsedP: number | undefined;
+
+    if (typeof limit === "string") {
+        parsedLimit = limit ? parseInt(limit) : undefined;
     }
 
-    findAllRecipes(sort_by, order, tag, limit, p)
-    .then((recipes: Recipe[]) => {
-        return response.status(200).send({ recipes });
-    })
-    .catch((error: Error) => {
+    if (typeof p === "string") {
+        parsedP = p ? parseInt(p) : undefined;
+    }
+
+    
+    try {
+        if (tag) {
+            if (typeof tag === "string") {
+                await checkTagExists(tag);
+            }
+            else if (Array.isArray(tag) && tag.every(t => typeof t === "string")) {
+                await Promise.all(tag.map(t => checkTagExists(t)));
+            }
+        }
+
+        if (
+            (typeof sort_by === "string" || sort_by === undefined) &&
+            (typeof order === "string" || order === undefined) &&
+            (typeof tag === "string" || (Array.isArray(tag) && tag.every(t => typeof t === "string")) || tag === undefined) &&
+            (typeof parsedLimit === "number" || parsedLimit === undefined) &&
+            (typeof parsedP === "number" || parsedP === undefined)
+        ) {
+            const recipes: Recipe[] = await findAllRecipes(sort_by, order, tag, parsedLimit, parsedP);
+
+            response.status(200).send({ recipes });
+        }
+    } catch (error: unknown) {
         next(error);
-    });
+    }
 }
