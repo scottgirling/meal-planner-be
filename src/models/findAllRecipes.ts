@@ -1,7 +1,8 @@
 import db from "../db/connection.js";
+import { NotFoundError } from "../types/errors.js";
 import { Recipe } from "../types/recipe.js";
 
-export const findAllRecipes = (sort_by: string = "votes", order: string = "desc", tag: string | undefined, limit: number = 20, p: number = 1) => {
+export const findAllRecipes = async (sort_by: string = "votes", order: string = "desc", tag: string | string[] | undefined, limit: number = 20, p: number = 1) => {
 
     const offset = (p - 1) * limit;
     const validSortBy = ["prep_time", "cook_time", "votes", "created_at", "difficulty"];
@@ -23,7 +24,7 @@ export const findAllRecipes = (sort_by: string = "votes", order: string = "desc"
             tag.forEach((tag) => {
                 filterQueries.push(tag);
                 sqlQuery += ` OR tags.tag_slug = $${filterQueries.length}`;
-            })
+            });
         } else {
             filterQueries.push(tag);
             sqlQuery += ` WHERE tags.tag_slug = $${filterQueries.length}`;
@@ -32,11 +33,12 @@ export const findAllRecipes = (sort_by: string = "votes", order: string = "desc"
 
     sqlQuery += ` ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset}`;
 
-    return db.query(sqlQuery, filterQueries)
-    .then(({ rows } : { rows: Recipe[] }) => {
-        if (p > 1 && !rows.length) {
-            return Promise.reject({ status: 404, msg: "Page does not exist." });
-        }
-        return rows;
-    });
+    const result = await db.query<Recipe>(sqlQuery, filterQueries);
+    const recipes = result.rows;
+
+    if (p > 1 && !recipes.length) {
+        throw new NotFoundError("Page does not exist.");
+    }
+
+    return recipes;
 }
