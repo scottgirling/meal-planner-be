@@ -1,21 +1,21 @@
 import { NextFunction, Request, Response } from "express";
+import { checkUserExists } from "../utils/checkUserExists";
 import { findFavouriteRecipesByUserId } from "../models/findFavouriteRecipesByUserId"
 import { Recipe } from "../types";
-import { checkUserExists } from "../utils/checkUserExists";
 
-export const getUserFavouriteRecipes = (request: Request, response: Response, next: NextFunction) => {
+export const getUserFavouriteRecipes = async (
+    request: Request<{ user_id: string }>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const { user_id } = request.params;
 
-    checkUserExists(user_id)
-    .catch((error: Error) => {
-        next(error);
-    })
+    try {
+        await checkUserExists(user_id);
+        const recipes: Recipe[] = await findFavouriteRecipesByUserId(user_id);
 
-    findFavouriteRecipesByUserId(user_id)
-    .then((recipes: Recipe[]) => {
-        return response.status(200).send({ recipes });
-    })
-    .catch((error: Error) => {
+        response.status(200).send({ recipes });
+    } catch (error: unknown) {
         next(error);
-    });
+    }
 }
