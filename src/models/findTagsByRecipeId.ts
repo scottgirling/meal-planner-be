@@ -1,12 +1,23 @@
 import db from "../db/connection.js";
+import { DBClient } from "../types/db-client.js";
 import { Tag } from "../types/tag.js";
+import { NotFoundError } from "../types/errors.js";
 
-export const findTagsByRecipeId = (recipe_id: string) => {
-    return db.query("SELECT tags.* FROM recipe_tags JOIN tags ON recipe_tags.tag_id = tags.tag_id WHERE recipe_tags.recipe_id = $1", [recipe_id])
-    .then(({ rows } : { rows: Tag[] }) => {
-        if (!rows.length) {
-            return Promise.reject({ status: 404, msg: "Recipe does not exist." });
-        }
-        return rows;
-    });
+export const findTagsByRecipeId = async (recipe_id: string, client: DBClient = db): Promise<Tag[]> => {
+
+    const result = await client.query<Tag>(`
+        SELECT tags.* 
+        FROM recipe_tags 
+        JOIN tags 
+        ON recipe_tags.tag_id = tags.tag_id 
+        WHERE recipe_tags.recipe_id = $1
+        `, [recipe_id]
+    );
+    const tags = result.rows;
+
+    if (!tags.length) {
+        throw new NotFoundError("Recipe does not exist.");
+    }
+
+    return tags;
 }
