@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from "express";
+import { RecipeTagBody } from "../types/req-body/RecipeTagBody";
 import { createRecipeTag } from "../models/createRecipeTag";
 import { RecipeTag } from "../types";
 
-export const postRecipeTag = (request: Request, response: Response, next: NextFunction) => {
+export const postRecipeTag = async (
+    request: Request<{}, {}, RecipeTagBody>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const { 
         recipe_id, 
         tag_ids 
@@ -16,11 +21,14 @@ export const postRecipeTag = (request: Request, response: Response, next: NextFu
         return Promise.reject({ status: 400, msg: "Invalid data type." });
     }
 
-    createRecipeTag(recipe_id, tag_ids)
-    .then((recipe_tags: RecipeTag[]) => {
-        return response.status(201).send({ recipe_tags });
-    })
-    .catch((error: Error) => {
+    try {
+        const recipe_tags: RecipeTag[] = await createRecipeTag(
+            recipe_id,
+            tag_ids
+        );
+
+        response.status(201).send({ recipe_tags });
+    } catch (error: unknown) {
         next(error);
-    });
+    }
 }
