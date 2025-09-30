@@ -19,17 +19,4 @@ export const getUserShoppingLists = async (
     } catch (error: unknown) {
         next(error);
     }
-
-    // checkUserExists(user_id)
-    // .catch((error: Error) => {
-    //     next(error);
-    // });
-
-    // findShoppingListsByUserId(user_id)
-    // .then((items: ShoppingListIngredient[]) => {
-    //     return response.status(200).send({ items });
-    // })
-    // .catch((error: Error) => {
-    //     next(error);
-    // });
 }
