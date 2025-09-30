@@ -1,7 +1,12 @@
 import { NextFunction, Request, Response } from "express";
+import { RecipeIngredientBody } from "../types/req-body/RecipeIngredientBody";
 import { createRecipeIngredients } from "../models/createRecipeIngredients";
 
-export const postRecipeIngredients = async (request: Request, response: Response, next: NextFunction) => {
+export const postRecipeIngredients = async (
+    request: Request<{}, {}, RecipeIngredientBody>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const {
         recipe_id,
         ingredient_ids,
@@ -27,7 +32,12 @@ export const postRecipeIngredients = async (request: Request, response: Response
 
     try {
         if (ingredient_ids && ingredient_ids.length) {
-            const recipe_ingredients = await createRecipeIngredients(recipe_id, ingredient_ids, quantity, unit)
+            const recipe_ingredients = await createRecipeIngredients(
+                recipe_id, 
+                ingredient_ids, 
+                quantity, 
+                unit
+            );
 
             return response.status(201).send({ recipe_ingredients });
         } 
