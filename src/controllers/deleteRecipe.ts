@@ -3,7 +3,11 @@ import { checkRecipeExists } from "../utils/checkRecipeExists";
 import { checkRecipeIsPublic } from "../utils/checkRecipeIsPublic";
 import { removeRecipeById } from "../models/removeRecipeById";
 
-export const deleteRecipe = async (request: Request, response: Response, next: NextFunction) => {
+export const deleteRecipe = async (
+    request: Request<{ recipe_id: string }>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const { recipe_id } = request.params;
     
     try {
