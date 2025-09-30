@@ -3,21 +3,20 @@ import { findMealPlansByUserId } from "../models/findMealPlansByUserId";
 import { UserMealPlanRecipe } from "../types";
 import { checkUserExists } from "../utils/checkUserExists";
 
-export const getUserMealPlans = (request: Request, response: Response, next: NextFunction) => {
-    const { user_id } = request.params as {
-        user_id: string
-    };
+export const getUserMealPlans = async (
+    request: Request<{ user_id: string }>, 
+    response: Response, 
+    next: NextFunction
+) => {
+    const { user_id } = request.params;
 
-    checkUserExists(user_id)
-    .catch((error: Error) => {
-        next(error);
-    });
+    try {
+        await checkUserExists(user_id);
 
-    findMealPlansByUserId(user_id)
-    .then((meal_plans: UserMealPlanRecipe[]) => {
-        return response.status(200).send({ meal_plans });
-    })
-    .catch((error: Error) => {
+        const meal_plans: UserMealPlanRecipe[] = await findMealPlansByUserId(user_id);
+
+        response.status(200).send({ meal_plans });
+    } catch (error: unknown) {
         next(error);
-    });
+    }
 }

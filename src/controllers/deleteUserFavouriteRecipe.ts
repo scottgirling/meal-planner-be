@@ -3,7 +3,11 @@ import { checkUserExists } from "../utils/checkUserExists";
 import { checkRecipeExists } from "../utils/checkRecipeExists";
 import { removeUserFavouriteRecipe } from "../models/removeUserFavouriteRecipe";
 
-export const deleteUserFavouriteRecipe = async (request: Request, response: Response, next: NextFunction) => {
+export const deleteUserFavouriteRecipe = async (
+    request: Request<{ user_id: string, recipe_id: string }>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const {
         user_id,
         recipe_id

@@ -2,7 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { checkUserExists } from "../utils/checkUserExists";
 import { removeUserById } from "../models/removeUserById";
 
-export const deleteUser = async (request: Request, response: Response, next: NextFunction) => {
+export const deleteUser = async (
+    request: Request<{ user_id: string }>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const { user_id } = request.params;
     
     try {

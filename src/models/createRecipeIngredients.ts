@@ -2,7 +2,13 @@ import { DBClient } from "../types/db-client.js";
 import db from "../db/connection.js";
 import { RecipeIngredient } from "../types/recipe-ingredient.js";
 
-export const createRecipeIngredients = async (recipe_id: string, ingredient_ids: number[], quantity: number[], unit: string[], client: DBClient = db) => {
+export const createRecipeIngredients = async (
+    recipe_id: string, 
+    ingredient_ids: number[], 
+    quantity: number[], 
+    unit: string[], 
+    client: DBClient = db
+): Promise<RecipeIngredient[] | undefined> => {
 
     if (!ingredient_ids || !ingredient_ids.length) {
         return;
@@ -17,12 +23,14 @@ export const createRecipeIngredients = async (recipe_id: string, ingredient_ids:
         queryParams.push(recipe_id, ingredient_id, quantity[index], unit[index]);
     });
 
-    try {
-        const result: { rows: RecipeIngredient[] } = await client.query(`INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES ${positionalPlaceholders.join(", ")} RETURNING *`, queryParams);
-        const { rows } = result;
+    const result = await client.query<RecipeIngredient>(`
+        INSERT INTO recipe_ingredients 
+        (recipe_id, ingredient_id, quantity, unit) 
+        VALUES ${positionalPlaceholders.join(", ")} 
+        RETURNING *
+        `, queryParams
+    );
+    const recipe_ingredients = result.rows;
 
-        return rows;
-    } catch (error) {
-        throw error;
-    }
+    return recipe_ingredients;
 }

@@ -3,7 +3,11 @@ import { checkUserExists } from "../utils/checkUserExists";
 import { checkMealPlanExists } from "../utils/checkMealPlanExists";
 import { removeUserMealPlan } from "../models/removeUserMealPlan";
 
-export const deleteUserMealPlan = async (request: Request, response: Response, next: NextFunction) => {
+export const deleteUserMealPlan = async (
+    request: Request<{ user_id: string, meal_plan_id: string }>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const {
         user_id, 
         meal_plan_id

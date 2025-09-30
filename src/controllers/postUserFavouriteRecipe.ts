@@ -4,7 +4,11 @@ import { UserFavouriteRecipe } from "../types";
 import { checkUserExists } from "../utils/checkUserExists";
 import { checkRecipeExists } from "../utils/checkRecipeExists";
 
-export const postUserFavouriteRecipe = (request: Request, response: Response, next: NextFunction) => {
+export const postUserFavouriteRecipe = async (
+    request: Request<{ user_id: string }, {}, { recipe_id: string }>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const { user_id } = request.params;
     const { recipe_id } = request.body;
 
@@ -12,21 +16,17 @@ export const postUserFavouriteRecipe = (request: Request, response: Response, ne
         return Promise.reject({ status: 400, msg: 'Invalid request - missing field(s).' });
     }
 
-    checkUserExists(user_id)
-    .catch((error: Error) => {
-        next(error);
-    });
+    try {
+        await checkUserExists(user_id);
+        await checkRecipeExists(recipe_id);
 
-    checkRecipeExists(recipe_id)
-    .catch((error: Error) => {
-        next(error);
-    });
+        const user_favourite_recipe: UserFavouriteRecipe = await createUserFavouriteRecipe(
+            user_id,
+            recipe_id
+        );
 
-    createUserFavouriteRecipe(user_id, recipe_id)
-    .then((user_favourite_recipe: UserFavouriteRecipe) => {
-        return response.status(201).send({ user_favourite_recipe });
-    })
-    .catch((error: Error) => {
+        response.status(201).send({ user_favourite_recipe });
+    } catch (error: unknown) {
         next(error);
-    });
+    }
 }

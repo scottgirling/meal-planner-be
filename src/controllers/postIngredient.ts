@@ -2,8 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { createIngredient } from "../models/createIngredient";
 import { Ingredient } from "../types";
 import { checkUserExists } from "../utils/checkUserExists";
+import { IngredientBody } from "../types/req-body/IngredientBody";
 
-export const postIngredient = (request: Request, response: Response, next: NextFunction) => {
+export const postIngredient = async (
+    request: Request<{}, {}, IngredientBody>, 
+    response: Response, 
+    next: NextFunction
+) => {
     const { 
         ingredient_name,
         ingredient_slug,
@@ -21,20 +26,17 @@ export const postIngredient = (request: Request, response: Response, next: NextF
         return Promise.reject({ status: 400, msg: "Invalid data type." });
     }
 
-    checkUserExists(ingredient_created_by)
-    .catch((error: Error) => {
-        next(error);
-    });
+    try {
+        await checkUserExists(ingredient_created_by);
 
-    createIngredient(
-        ingredient_name, 
-        ingredient_slug, 
-        ingredient_created_by
-    )
-    .then((ingredient: Ingredient) => {
-        return response.status(201).send({ ingredient} );
-    })
-    .catch((error: Error) => {
+        const ingredient: Ingredient = await createIngredient(
+            ingredient_name,
+            ingredient_slug,
+            ingredient_created_by
+        );
+
+        response.status(201).send({ ingredient });
+    } catch (error: unknown) {
         next(error);
-    });
+    }
 }
