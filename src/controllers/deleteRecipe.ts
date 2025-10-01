@@ -15,7 +15,7 @@ export const deleteRecipe = async (
         await checkRecipeIsPublic(recipe_id);
         await removeRecipeById(recipe_id);
 
-        return response.status(204).send();
+        response.status(204).send();
 
     } catch (error) {
         next(error);

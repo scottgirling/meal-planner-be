@@ -18,7 +18,7 @@ export const deleteUserShoppingList = async (
         await checkShoppingListExists(shopping_list_id);
         await removeUserShoppingList(user_id, shopping_list_id)
 
-        return response.status(204).send();
+        response.status(204).send();
 
     } catch (error) {
         next(error);

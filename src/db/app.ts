@@ -31,7 +31,7 @@ import { deleteUserShoppingList } from "../controllers/deleteUserShoppingList";
 import { deleteUserMealPlan } from "../controllers/deleteUserMealPlan";
 import { patchRecipe } from "../controllers/patchRecipe";
 import { patchUser } from "../controllers/patchUser";
-import { InvalidRequestError, NotFoundError } from "../types/errors";
+import { ForbiddenError, InvalidRequestError, NotFoundError } from "../types/errors";
 
 app.use(cors());
 app.use(express.json());
@@ -68,6 +68,9 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
     }
     if (error instanceof InvalidRequestError) {
         response.status(error.status).send({ msg: error.message});
+    }
+    if (error instanceof ForbiddenError) {
+        response.status(error.status).send({ msg: error.message });
     }
     next(error);
 });

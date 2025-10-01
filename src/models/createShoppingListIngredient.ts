@@ -1,7 +1,12 @@
-import { PoolClient } from "pg";
+import { DBClient } from "../types/db-client";
+import db from "../db/connection.js";
 import { ShoppingListIngredient } from "../types";
 
-export const createShoppingListIngredient = (client: PoolClient, newShoppingListId: number | undefined, ingredients: ShoppingListIngredient[]) => {
+export const createShoppingListIngredient = async (
+    newShoppingListId: number | undefined, 
+    ingredients: ShoppingListIngredient[],
+    client: DBClient = db, 
+): Promise<ShoppingListIngredient[]> => {
 
     const positionalPlaceholders: string[] = [];
     const queryParams: (string | number)[] = [];
@@ -12,8 +17,13 @@ export const createShoppingListIngredient = (client: PoolClient, newShoppingList
         queryParams.push(Number(newShoppingListId), ingredient.ingredient_id, ingredient.quantity, ingredient.unit)
     });
 
-    return client.query(`INSERT INTO shopping_list_ingredients (shopping_list_id, ingredient_id, quantity, unit) VALUES ${positionalPlaceholders.join(", ")} RETURNING *`, queryParams)
-    .then(({ rows } : { rows: ShoppingListIngredient[] }) => {
-        return rows;
-    });
+    const result = await client.query<ShoppingListIngredient>(`
+        INSERT INTO shopping_list_ingredients (shopping_list_id, ingredient_id, quantity, unit) 
+        VALUES ${positionalPlaceholders.join(", ")} 
+        RETURNING *
+        `, queryParams
+    );
+    const shopping_list_ingredients = result.rows;
+
+    return shopping_list_ingredients;
 }

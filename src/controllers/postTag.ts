@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { TagBody } from "../types/req-body/TagBody";
+import { InvalidRequestError } from "../types/errors";
 import { createTag } from "../models/createTag";
 import { Tag } from "../types";
 
@@ -17,7 +18,7 @@ export const postTag = async (
         (typeof tag_name !== "string" && tag_name !== undefined) || 
         (typeof tag_slug !== "string" && tag_slug !== undefined)
     ) {
-        return Promise.reject({ status: 400, msg: "Invalid data type." });
+        throw new InvalidRequestError("Invalid data type.");
     }
 
     try {

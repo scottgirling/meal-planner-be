@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { createUserFavouriteRecipe } from "../models/createUserFavouriteRecipe";
-import { UserFavouriteRecipe } from "../types";
+import { InvalidRequestError } from "../types/errors";
 import { checkUserExists } from "../utils/checkUserExists";
 import { checkRecipeExists } from "../utils/checkRecipeExists";
+import { createUserFavouriteRecipe } from "../models/createUserFavouriteRecipe";
+import { UserFavouriteRecipe } from "../types";
 
 export const postUserFavouriteRecipe = async (
     request: Request<{ user_id: string }, {}, { recipe_id: string }>, 
@@ -13,7 +14,7 @@ export const postUserFavouriteRecipe = async (
     const { recipe_id } = request.body;
 
     if (recipe_id === undefined) {
-        return Promise.reject({ status: 400, msg: 'Invalid request - missing field(s).' });
+        throw new InvalidRequestError("Invalid request - missing field(s).");
     }
 
     try {
