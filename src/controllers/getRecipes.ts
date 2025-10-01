@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { RecipeParams } from "../types/recipe-params";
+import { RecipeQueryParams } from "../types/RecipeQueryParams";
 import { checkTagExists } from "../utils/checkTagExists";
 import { findAllRecipes } from "../models/findAllRecipes";
 import { Recipe } from "../types";
 
 export const getRecipes = async (
-    request: Request<RecipeParams>, 
+    request: Request<{}, {}, {}, RecipeQueryParams>, 
     response: Response, 
     next: NextFunction
 ) => {
