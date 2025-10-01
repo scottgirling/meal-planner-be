@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { UserMealPlanBody } from "../types/req-body/UserMealPlanBody.js";
 import { PoolClient } from "pg";
 import db from "../db/connection.js";
-import { createUserMealPlan } from "../models/createUserMealPlan";
-import { createMealPlanRecipe } from "../models/createMealPlanRecipe";
+import { InvalidRequestError } from "../types/errors.js";
 import { checkUserExists } from "../utils/checkUserExists";
 import { checkRecipeExists } from "../utils/checkRecipeExists.js";
+import { createUserMealPlan } from "../models/createUserMealPlan";
+import { createMealPlanRecipe } from "../models/createMealPlanRecipe";
 import { formatDate } from "../utils/formatDate";
 
 export const postUserMealPlan = async (
@@ -23,14 +24,14 @@ export const postUserMealPlan = async (
         recipe_ids === undefined ||
         scheduled_dates === undefined
     ) {
-        return Promise.reject({ status: 400, msg: "Invalid request - missing field(s)." });
+        throw new InvalidRequestError("Invalid request - missing field(s).");
     }
 
     if (
         !Array.isArray(recipe_ids) ||
         !Array.isArray(scheduled_dates)
     ) {
-        return Promise.reject({ status: 400, msg: "Invalid data type." });
+        throw new InvalidRequestError("Invalid data type.");
     }
 
     let newMealPlanId: (number | undefined) = 0;
