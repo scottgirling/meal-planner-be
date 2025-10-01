@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { IngredientBody } from "../types/req-body/IngredientBody";
+import { InvalidRequestError } from "../types/errors";
+import { checkUserExists } from "../utils/checkUserExists";
 import { createIngredient } from "../models/createIngredient";
 import { Ingredient } from "../types";
-import { checkUserExists } from "../utils/checkUserExists";
-import { IngredientBody } from "../types/req-body/IngredientBody";
 
 export const postIngredient = async (
     request: Request<{}, {}, IngredientBody>, 
@@ -16,14 +17,14 @@ export const postIngredient = async (
     } = request.body;
 
     if (ingredient_created_by === undefined) {
-        return Promise.reject({ status: 400, msg: 'Invalid request - missing field(s).' });
+        throw new InvalidRequestError("Invalid request - missing field(s).");
     }
 
     if (
         (typeof ingredient_name !== "string" && ingredient_name !== undefined) || 
         (typeof ingredient_slug !== "string" && ingredient_slug !== undefined)
     ) {
-        return Promise.reject({ status: 400, msg: "Invalid data type." });
+        throw new InvalidRequestError("Invalid data type.");
     }
 
     try {
