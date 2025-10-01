@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { UserShoppingListBody } from "../types/req-body/UserShoppingListBody.js";
 import { PoolClient } from "pg";
 import db from "../db/connection.js";
+import { InvalidRequestError } from "../types/errors.js";
 import { checkUserExists } from "../utils/checkUserExists.js";
 import { checkRecipeExists } from "../utils/checkRecipeExists.js";
 import { createUserShoppingList } from "../models/createUserShoppingList";
@@ -26,11 +27,11 @@ export const postUserShoppingList = async (
         meal_plan_id === undefined ||
         recipe_ids === undefined
     ) {
-        return Promise.reject({ status: 400, msg: "Invalid request - missing field(s)." });
+        throw new InvalidRequestError("Invalid request - missing field(s).");
     }
 
     if (!Array.isArray(recipe_ids)) {
-        return Promise.reject({ status: 400, msg: "Invalid data type." });
+        throw new InvalidRequestError("Invalid data type.");
     }
 
     let newShoppingListId: (number | undefined) = 0;
