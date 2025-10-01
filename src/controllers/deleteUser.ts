@@ -13,7 +13,7 @@ export const deleteUser = async (
         await checkUserExists(user_id);
         await removeUserById(user_id);
 
-        return response.status(204).send();
+        response.status(204).send();
 
     } catch (error) {
         next(error);

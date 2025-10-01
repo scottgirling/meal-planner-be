@@ -18,7 +18,7 @@ export const deleteUserMealPlan = async (
         await checkMealPlanExists(meal_plan_id);
         await removeUserMealPlan(user_id, meal_plan_id);
 
-        return response.status(204).send();
+        response.status(204).send();
 
     } catch (error) {
         next(error);

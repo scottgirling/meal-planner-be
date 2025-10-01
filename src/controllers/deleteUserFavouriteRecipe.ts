@@ -18,7 +18,7 @@ export const deleteUserFavouriteRecipe = async (
         await checkRecipeExists(recipe_id);
         await removeUserFavouriteRecipe(user_id, recipe_id);
 
-        return response.status(204).send();
+        response.status(204).send();
 
     } catch (error) {
         next(error);
