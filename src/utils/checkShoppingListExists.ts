@@ -14,11 +14,11 @@ export const checkShoppingListExists = async (
         WHERE shopping_list_id = $1
         `, [shopping_list_id]
     );
-    const [shopping_list] = result.rows;
+    const [shoppingList] = result.rows;
 
-    if (!shopping_list) {
+    if (!shoppingList) {
         throw new NotFoundError("Shopping List does not exist.");
     }
 
-    return shopping_list;
+    return shoppingList;
 }
