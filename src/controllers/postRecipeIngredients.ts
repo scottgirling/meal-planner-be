@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { RecipeIngredientBody } from "../types/req-body/RecipeIngredientBody";
 import { createRecipeIngredients } from "../models/createRecipeIngredients";
+import { InvalidRequestError } from "../types/errors";
 
 export const postRecipeIngredients = async (
     request: Request<{}, {}, RecipeIngredientBody>, 
@@ -19,7 +20,7 @@ export const postRecipeIngredients = async (
         quantity === undefined ||
         unit === undefined
     ) {
-        return Promise.reject({ status: 400, msg: 'Invalid request - missing field(s).' });
+        throw new InvalidRequestError("Invalid request - missing field(s).");
     }
 
     if (
@@ -27,7 +28,7 @@ export const postRecipeIngredients = async (
         !Array.isArray(quantity) ||
         !Array.isArray(unit)
     ) {
-        return Promise.reject({ status: 400, msg: "Invalid data type." });
+        throw new InvalidRequestError("Invalid data type.");
     }
 
     try {
