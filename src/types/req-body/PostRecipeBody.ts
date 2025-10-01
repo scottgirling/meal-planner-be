@@ -1,4 +1,4 @@
-export interface RecipeBody {
+export interface PostRecipeBody {
     recipe_name: string;
     recipe_slug: string;
     instructions: string;

@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { RecipeBody } from "../types/req-body/RecipeBody";
+import { PostRecipeBody } from "../types/req-body/PostRecipeBody";
 import { createRecipe } from "../models/createRecipe";
 import { Recipe } from "../types";
 
 export const postRecipe = async (
-    request: Request<{}, {}, RecipeBody>, 
+    request: Request<{}, {}, PostRecipeBody>, 
     response: Response, 
     next: NextFunction
 ) => {
