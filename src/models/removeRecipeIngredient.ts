@@ -3,7 +3,11 @@ import db from "../db/connection.js";
 import { RecipeIngredient } from "../types";
 import { checkIngredientExistsOnRecipe } from "../utils/checkIngredientExistsOnRecipe";
 
-export const removeRecipeIngredient = async (recipe_id: string, ingredientsToRemove: number[], client: DBClient = db) => {
+export const removeRecipeIngredient = async (
+    recipe_id: string, 
+    ingredientsToRemove: number[], 
+    client: DBClient = db
+): Promise<RecipeIngredient[] | undefined> => {
     
     if (!ingredientsToRemove || !ingredientsToRemove.length) {
         return;
@@ -19,14 +23,16 @@ export const removeRecipeIngredient = async (recipe_id: string, ingredientsToRem
         queryParams.push(ingredient);
     });
 
-    try {
-        await checkIngredientExistsOnRecipe(positionalPlaceholders, queryParams, client);
+    await checkIngredientExistsOnRecipe(positionalPlaceholders, queryParams, client);
 
-        const result: { rows:RecipeIngredient[] } = await client.query(`DELETE FROM recipe_ingredients WHERE recipe_id = $1 AND ingredient_id IN (${positionalPlaceholders.join(", ")}) RETURNING *`, queryParams);
-        const { rows } = result;
+    const result = await client.query<RecipeIngredient>(`
+        DELETE FROM recipe_ingredients 
+        WHERE recipe_id = $1 
+        AND ingredient_id IN (${positionalPlaceholders.join(", ")}) 
+        RETURNING *
+        `, queryParams
+    );
+    const removedRecipeIngredients = result.rows;
 
-        return rows;
-    } catch (error) {
-        throw error;
-    }
+    return removedRecipeIngredients;
 }
