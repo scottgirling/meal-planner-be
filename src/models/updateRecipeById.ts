@@ -2,8 +2,18 @@ import { DBClient } from "../types/db-client.js";
 import db from "../db/connection.js";
 import { Recipe } from "../types/recipe.js";
 
-export const updateRecipeById = async (recipe_id: string, recipe_name: string, instructions: string, prep_time: number, cook_time: number, servings: number, recipe_img_url: string, difficulty: number, is_recipe_public: boolean, client: DBClient = db) => {
-
+export const updateRecipeById = async (
+    recipe_id: string, 
+    recipe_name: string, 
+    instructions: string, 
+    prep_time: number, 
+    cook_time: number, 
+    servings: number, 
+    recipe_img_url: string, 
+    difficulty: number, 
+    is_recipe_public: boolean, 
+    client: DBClient = db
+): Promise<Recipe> => {
     let queryValues = [];
 
     let sqlQuery = "UPDATE recipes SET recipe_last_updated_at = CURRENT_TIMESTAMP";
@@ -54,12 +64,8 @@ export const updateRecipeById = async (recipe_id: string, recipe_name: string, i
     queryValues.push(recipe_id);
     sqlQuery += ` WHERE is_recipe_public = false AND recipe_id = $${queryValues.length} RETURNING *`;
 
-    try {
-        const result: { rows: Recipe[] } = await client.query(sqlQuery, queryValues);
-        const { rows } = result;
+    const result = await client.query<Recipe>(sqlQuery, queryValues);
+    const [updatedRecipe] = result.rows;
 
-        return rows[0];
-    } catch (error) {
-        throw error;
-    }
+    return updatedRecipe;
 }
