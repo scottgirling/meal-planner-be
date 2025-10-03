@@ -75,7 +75,7 @@ describe("GET /api/tags", () => {
 });
 
 describe("GET /api/recipes", () => {
-    test("200: responds with an array of recipe objects, with the appropriate properties and status code", () => {
+    test("200: responds with an array of public recipe objects (those which have an 'is_recipe_public' value of 'true'), with the appropriate properties and status code", () => {
         return request(app)
         .get("/api/recipes")
         .expect(200)
@@ -84,7 +84,7 @@ describe("GET /api/recipes", () => {
                 recipes: Recipe[]
             }
             expect(Array.isArray(recipes)).toBe(true);
-            expect(recipes.length).toBe(4);
+            expect(recipes.length).toBe(3);
             recipes.forEach((recipe) => {
                 expect(recipe).toHaveProperty("recipe_id", expect.any(Number));
                 expect(recipe).toHaveProperty("recipe_name", expect.any(String));
@@ -99,13 +99,13 @@ describe("GET /api/recipes", () => {
                 expect(recipe).toHaveProperty("recipe_last_updated_at", expect.any(String));
                 expect(recipe).toHaveProperty("recipe_img_url", expect.any(String));
                 expect(recipe).toHaveProperty("difficulty", expect.any(Number));
-                expect(recipe).toHaveProperty("is_recipe_public", expect.any(Boolean));
+                expect(recipe).toHaveProperty("is_recipe_public", true);
             });
         });
     });
     describe("Queries", () => {
         describe("sort_by", () => {
-            test("200: responds with an array of recipe objects sorted by a valid column with an appropriate status code", () => {
+            test("200: responds with an array of public recipe objects sorted by a valid column with an appropriate status code", () => {
                 return request(app)
                 .get("/api/recipes?sort_by=prep_time")
                 .expect(200)
@@ -113,13 +113,12 @@ describe("GET /api/recipes", () => {
                     const { recipes } = response.body as {
                         recipes: Recipe[]
                     }
-                    expect(recipes[0].prep_time).toBe(20);
-                    expect(recipes[1].prep_time).toBe(15);
-                    expect(recipes[2].prep_time).toBe(10);
-                    expect(recipes[3].prep_time).toBe(5);
+                    expect(recipes[0].prep_time).toBe(15);
+                    expect(recipes[1].prep_time).toBe(10);
+                    expect(recipes[2].prep_time).toBe(5);
                 });
             });
-            test("200: responds with an array of recipe objects sorted by a default column ('votes') when one is not specifically selected, as well as an appropriate status code", () => {
+            test("200: responds with an array of public recipe objects sorted by a default column ('votes') when one is not specifically selected, as well as an appropriate status code", () => {
                 return request(app)
                 .get("/api/recipes")
                 .expect(200)
@@ -130,7 +129,6 @@ describe("GET /api/recipes", () => {
                     expect(recipes[0].votes).toBe(7);
                     expect(recipes[1].votes).toBe(4);
                     expect(recipes[2].votes).toBe(3);
-                    expect(recipes[3].votes).toBe(2);
                 });
             });
             test("400: responds with an appropriate status code and error message when sorted by an invalid, non-existent column", () => {
@@ -154,10 +152,9 @@ describe("GET /api/recipes", () => {
                     const { recipes } = response.body as {
                         recipes: Recipe[]
                     }
-                    expect(recipes[0].votes).toBe(2);
-                    expect(recipes[1].votes).toBe(3);
-                    expect(recipes[2].votes).toBe(4);
-                    expect(recipes[3].votes).toBe(7);
+                    expect(recipes[0].votes).toBe(3);
+                    expect(recipes[1].votes).toBe(4);
+                    expect(recipes[2].votes).toBe(7);
                 });
             });
             test("200: responds with an ordered array of recipe objects by a default value ('desc') when one is not specifically selected, as well as an appropriate status code", () => {
@@ -171,10 +168,9 @@ describe("GET /api/recipes", () => {
                     expect(recipes[0].votes).toBe(7);
                     expect(recipes[1].votes).toBe(4);
                     expect(recipes[2].votes).toBe(3);
-                    expect(recipes[3].votes).toBe(2);
                 });
             });
-            test("200: responds with an appropriate status code and error message when ordered by an invalid, non-existent value", () => {
+            test("400: responds with an appropriate status code and error message when ordered by an invalid, non-existent value", () => {
                 return request(app)
                 .get("/api/recipes?order=high-to-low")
                 .expect(400)
@@ -188,7 +184,7 @@ describe("GET /api/recipes", () => {
         });
         describe("filters", () => {
             describe("tags", () => {
-                test("200: responds with a filtered array of event objects according to the 'tag' query, as well as an appropriate status code", () => {
+                test("200: responds with a filtered array of public recipe objects according to the 'tag' query, as well as an appropriate status code", () => {
                     return request(app)
                     .get("/api/recipes?tag=italian")
                     .expect(200)
@@ -218,7 +214,7 @@ describe("GET /api/recipes", () => {
                         expect(recipes).toEqual(expectedOutput);
                     });
                 });
-                test("200: responds with a filtered array of recipes objects according to the 'tag' queries when two or more are selected at the same time, as well as an appropriate status code", () => {
+                test("200: responds with a filtered array of public recipe objects according to the 'tag' queries when two or more are selected at the same time, as well as an appropriate status code", () => {
                     return request(app)
                     .get("/api/recipes?tag=italian&tag=healthy")
                     .expect(200)
@@ -256,7 +252,7 @@ describe("GET /api/recipes", () => {
     });
     describe("Pagination", () => {
         describe("limit", () => {
-            test("200: responds with an array of recipe objects according to the 'limit' query, as well as an appropriate status code", () => {
+            test("200: responds with an array of public recipe objects according to the 'limit' query, as well as an appropriate status code", () => {
                 return request(app)
                 .get("/api/recipes?limit=2")
                 .expect(200)
@@ -267,7 +263,7 @@ describe("GET /api/recipes", () => {
                     expect(recipes.length).toBe(2);
                 });
             });
-            test("200: responds with an array of recipe objects according to a default 'limit' query value (20) when one is not specifically selected, as well as an appropriate status code", () => {
+            test("200: responds with an array of public recipe objects according to a default 'limit' query value (20) when one is not specifically selected, as well as an appropriate status code", () => {
                 return request(app)
                 .get("/api/recipes")
                 .expect(200)
@@ -275,7 +271,7 @@ describe("GET /api/recipes", () => {
                     const { recipes } = response.body as {
                         recipes: Recipe[]
                     }
-                    expect(recipes.length).toBe(4);
+                    expect(recipes.length).toBe(3);
                 });
             });
             test("400: responds with an appropriate status code and error message when passed an invalid 'limit' query value", () => {
@@ -291,7 +287,7 @@ describe("GET /api/recipes", () => {
             });
         });
         describe("p", () => {
-            test("200: responds with an array of recipe objects according to the 'p' query, as well as an appropriate status code", () => {
+            test("200: responds with an array of public recipe objects according to the 'p' query, as well as an appropriate status code", () => {
                 return request(app)
                 .get("/api/recipes?limit=2&p=2")
                 .expect(200)
@@ -299,12 +295,11 @@ describe("GET /api/recipes", () => {
                     const { recipes } = response.body as {
                         recipes: Recipe[]
                     }
-                    expect(recipes.length).toBe(2);
+                    expect(recipes.length).toBe(1);
                     expect(recipes[0].votes).toBe(3);
-                    expect(recipes[1].votes).toBe(2);
                 });
             });
-            test("200: responds with an array of recipe objects according to a default 'p' query value ('1') when one is not specifically selected, as well as an appropriate status code", () => {
+            test("200: responds with an array of public recipe objects according to a default 'p' query value ('1') when one is not specifically selected, as well as an appropriate status code", () => {
                 return request(app)
                 .get("/api/recipes?limit=2")
                 .expect(200)

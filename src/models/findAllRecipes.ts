@@ -1,26 +1,47 @@
 import { DBClient } from "../types/db-client.js";
 import db from "../db/connection.js";
-import { NotFoundError } from "../types/errors.js";
+import { InvalidRequestError, NotFoundError } from "../types/errors.js";
 import { Recipe } from "../types/recipe.js";
 
-export const findAllRecipes = async (sort_by: string = "votes", order: string = "desc", tag: string | string[] | undefined, limit: number = 20, p: number = 1, client: DBClient = db) => {
+export const findAllRecipes = async (
+    sort_by: string = "votes", 
+    order: string = "desc", 
+    tag: string | string[] | undefined, 
+    limit: number = 20, 
+    p: number = 1, 
+    client: DBClient = db
+): Promise<Recipe[]> => {
 
-    const offset = (p - 1) * limit;
-    const validSortBy = ["prep_time", "cook_time", "votes", "created_at", "difficulty"];
+    const validSortBy = [
+        "prep_time", 
+        "cook_time", 
+        "votes", 
+        "created_at", 
+        "difficulty"
+    ];
     const validOrder = ["asc", "desc"];
+    const offset = (p - 1) * limit;
     let filterQueries: string[] | undefined = [];
 
     if (!validSortBy.includes(sort_by) || !validOrder.includes(order)) {
-        return Promise.reject({ status: 400, msg: "Invalid 'Sort By' or 'Order' query." });
+        throw new InvalidRequestError("Invalid 'Sort By' or 'Order' query.");
     }
 
-    let sqlQuery = `SELECT DISTINCT recipes.* FROM recipes JOIN recipe_tags ON recipes.recipe_id = recipe_tags.recipe_id JOIN tags ON recipe_tags.tag_id = tags.tag_id`;
+    let sqlQuery = `
+        SELECT DISTINCT recipes.* 
+        FROM recipes 
+        JOIN recipe_tags 
+        ON recipes.recipe_id = recipe_tags.recipe_id 
+        JOIN tags 
+        ON recipe_tags.tag_id = tags.tag_id
+        WHERE recipes.is_recipe_public = true
+    `;
 
     if (tag) {
         if (Array.isArray(tag)) {
             filterQueries.push(tag[0])
             tag.shift();
-            sqlQuery += ` WHERE tags.tag_slug = $${filterQueries.length}`;
+            sqlQuery += ` AND tags.tag_slug = $${filterQueries.length}`;
     
             tag.forEach((tag) => {
                 filterQueries.push(tag);
@@ -28,11 +49,15 @@ export const findAllRecipes = async (sort_by: string = "votes", order: string = 
             });
         } else {
             filterQueries.push(tag);
-            sqlQuery += ` WHERE tags.tag_slug = $${filterQueries.length}`;
+            sqlQuery += ` AND tags.tag_slug = $${filterQueries.length}`;
         }
     }
 
-    sqlQuery += ` ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset}`;
+    sqlQuery += ` 
+       ORDER BY ${sort_by} ${order} 
+       LIMIT ${limit} 
+       OFFSET ${offset}
+    `;
 
     const result = await client.query<Recipe>(sqlQuery, filterQueries);
     const recipes = result.rows;
